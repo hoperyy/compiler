@@ -1,6 +1,6 @@
 
 /**
- * @file que scaffold entry file
+ * @file qute scaffold entry file
  */
 
 require('qute-scaffold-helper')(process)(({ userDir, srcDir, distDir, taskName, port }) => {
