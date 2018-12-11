@@ -1,4 +1,4 @@
-function* getDefaultReplace({ userFolder }) {
+function* getDefaultReplace() {
     return {
         '$$_CDNURL_$$': {
             'dev-daily': `../static`,

@@ -62,9 +62,7 @@ module.exports = function* ({ userFolder, srcFolder, buildFolder, currentEnv, de
     }
 
     // 针对 replace 字段单独处理
-    const defaultReplace = yield getDefaultReplace({
-        userFolder,
-    });
+    const defaultReplace = yield getDefaultReplace();
 
     mergedUserConfig.replace = Object.assign(defaultReplace, mergedUserConfig.replace);
 
