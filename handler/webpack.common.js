@@ -1,114 +1,92 @@
-module.exports = ({ context, fastConfig }) => {
-    const { srcDir, distDir, taskName } = context;
-    const { replace, webpackConfig } = fastConfig;
+module.exports = (finalConfig) => {
+    const { commonJs, srcFolder, buildFolder, currentEnv, replace, webpackConfig, hashStatic, afterBuild } = finalConfig;
 
     const webpack = require('webpack');
     const path = require('path');
     const fs = require('fs');
-    const StringReplacePlugin = require('string-replace-webpack-plugin');
+    const fse = require('fs-extra');
     const merge = require('webpack-merge');
+    const WebpackOnBuildPlugin = require('on-build-webpack');
+    const PluginNoop = require('./plugins/plugin-noop');
+    const PluginClean = require('./plugins/plugin-clean');
 
-    const PluginClean = require('./plugin-clean');
-
-    const getEntryObj = () => {
-        const entryFiles = {};
-        const pageDir = path.join(srcDir, 'pages');
-
-        fs.readdirSync(pageDir).forEach((file) => {
-            const state = fs.statSync(path.join(pageDir, file));
-            const dirname = path.basename(file);
-            const indexFile = path.join(srcDir, 'pages', dirname, 'index.js');
-
-            if (state.isDirectory(file) && fs.existsSync(indexFile)) {
-                entryFiles[`${dirname}/index`] = [
-                    'babel-polyfill',
-                    indexFile
-                ];
-            }
-        });
-
-        return entryFiles;
-    };
-
-    const getReplaceLoader = (replaceObj) => {
-        const replacements = [];
-
-        Object.keys(replaceObj).forEach((key) => {
-            replacements.push({
-                pattern: new RegExp(key.replace(/\$/g, '\\$'), 'g'),
-                replacement() {
-                    return replaceObj[key][taskName];
-                },
-            });
-        });
-
-        return StringReplacePlugin.replace({
-            replacements,
-        });
-    };
-
-    let commonWebpackConfig = {
-        entry: getEntryObj(),
+    let commonWebpackConfig = merge({
+            entry: commonJs ? { vendor: ['vue', 'core-js'] } : {},
+        }, {
+        entry: require('./utils/util-get-entry-obj')(finalConfig),
         output: {
-            path: path.join(distDir, '/static/'),
-            filename: '[name].js',
+            path: path.join(buildFolder, '/static/'),
+            filename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
             publicPath: '/static/',
-            chunkFilename: '[name].js',
+            chunkFilename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
         },
         module: {
             rules: [{
-                test: /\.jpg$/,
-                use: 'url-loader?name=img/[hash].[ext]&mimetype=image/jpg&limit=8000',
-            }, {
-                test: /\.png$/,
-                use: 'url-loader?name=img/[hash].[ext]&mimetype=image/png&limit=8000',
-            }, {
-                test: /\.gif$/,
-                use: 'url-loader?name=img/[hash].[ext]&mimetype=image/gif&limit=8000',
+                test: /\.(jpg|png|gif)$/,
+                use: 'url-loader?name=img/[hash].[ext]&limit=8000',
+                enforce: 'post'
             }, {
                 test: /\.(woff|svg|eot|ttf)\??.*$/,
                 use: 'url-loader?name=img/[hash].[ext]&limit=10',
+                enforce: 'post'
             }, {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                include: [
-                    srcDir,
-                ],
+                enforce: 'post',
+                exclude: {
+                    test: [
+                        path.join(srcFolder, 'node_modules'),
+                        path.join(__dirname, '../node_modules')
+                    ],
+                    exclude: [
+                        path.join(srcFolder, 'node_modules/@vdian/hotpot'),
+                        path.join(srcFolder, 'node_modules/@vdian/hotpot-h5'),
+                        path.join(__dirname, '../node_modules/@vdian/hotpot'),
+                        /strip-ansi/
+                    ]
+                }
             }, {
-                test: /\.[(js)(vue)(vuex)(html)]*$/,
+                test: /\.[(js)(vue)(vuex)(tpl)(html)]*$/,
+                enforce: 'pre',
                 exclude: /(node_modules|bower_components)/,
-                loader: getReplaceLoader(replace, taskName),
+                loader: require('./utils/util-get-replace-loader')(replace, currentEnv),
             }],
         },
         resolve: {
-            alias: {
-                vue: 'vue/dist/vue.common.js',
-            },
             modules: [
-                path.resolve(srcDir, 'node_modules/'),
+                path.resolve(srcFolder, 'node_modules/'),
                 path.resolve(__dirname, '../node_modules/'),
             ],
+            extensions: ['.js', '.json', '.vue']
         },
         resolveLoader: {
             modules: [
-                path.resolve(srcDir, 'node_modules/'),
+                path.resolve(srcFolder, 'node_modules/'),
                 path.resolve(__dirname, '../node_modules/'),
             ],
         },
         plugins: [
             new PluginClean({
-                distDir,
+                buildFolder
             }),
-            new webpack.optimize.CommonsChunkPlugin({
-                name: 'vendor',
-                filename: 'common.js',
-                minChunks: Infinity,
+            new WebpackOnBuildPlugin(() => {
+                if (afterBuild) {
+                    afterBuild(buildFolder);
+                }
             }),
+            hashStatic ? new webpack.HashedModuleIdsPlugin() : new PluginNoop()
         ],
-    };
+    }, webpackConfig);
 
-    // merge fast config
-    commonWebpackConfig = merge(commonWebpackConfig, webpackConfig);
+    // 默认是有 vendor 配置的，如果用户不希望生成 common.js，则删去默认的 vendor
+    if (!finalConfig.commonJs) {
+        delete commonWebpackConfig.entry.vendor;
+    }
+
+    // 如果用户设置了 vendor，则覆盖默认的 vendor
+    if (webpackConfig && webpackConfig.entry && webpackConfig.entry.vendor) {
+        commonWebpackConfig.entry.vendor = webpackConfig.entry.vendor;
+    }
 
     return commonWebpackConfig;
 };
