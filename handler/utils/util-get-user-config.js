@@ -21,20 +21,13 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
         commonJs: true
     };
 
-    console.log(1);
     const userConfigFile = path.join(srcDir, 'qute.config.js');
-
-    console.log(33, userConfigFile);
 
     if (!fs.existsSync(userConfigFile)) {
         return;
     }
 
-    console.log(2);
-
     let userConfig = require(userConfigFile);
-
-    console.log(4);
 
     // 支持开发者的配置文件有两种格式：function / json object
     if (typeof userConfig === 'function') {
@@ -50,8 +43,6 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
             mergedUserConfig[configName] = userConfig[configName];
         }
     });
-
-    console.log(3);
 
     // 对 distDir 特殊处理
     if (mergedUserConfig.distDir) {
@@ -79,39 +70,6 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
     if (mergedUserConfig.webpackConfig && mergedUserConfig.webpackConfig.entry && mergedUserConfig.webpackConfig.entry.vendor === null) {
         logUtil.warn('过段时间不再支持 webpackConfig 配置项中 "webpackConfig.entry.vendor === null" 设置，若不希望生成 common.js，请直接配置 commonJs: false');
         mergedUserConfig.commonJs = false;
-    }
-
-    // 单独对 config.js 中的配置进行处理
-    console.log('444');
-    if (require('../process-configed-project/index').isConfigedProject({ userDir })) {
-        const configValue = require('../process-configed-project/index').getFormattedConfigValue({ srcDir });
-        const oldReplace = configValue.vars;
-
-        if (oldReplace) {
-            // 格式化
-            const newReplace = {};
-
-            Object.keys(oldReplace).forEach(keyword => {
-                newReplace[keyword] = {};
-                if (!/mock/.test(keyword)) {
-                    const keywordObj = oldReplace[keyword];
-
-                    Object.keys(keywordObj).forEach(envPartLeftKeyword => {
-                        if (/(build)|(dev)/.test(envPartLeftKeyword)) {
-                            const envPartLeftObj = keywordObj[envPartLeftKeyword];
-
-                            Object.keys(envPartLeftObj).forEach(envPartRightKeyword => {
-                                newReplace[keyword][`${envPartLeftKeyword}-${envPartRightKeyword}`] = envPartLeftObj[envPartRightKeyword];
-                            });
-                        }
-                    });
-                }
-
-                // todo mock
-            });
-
-            Object.assign(mergedUserConfig.replace, newReplace);
-        }
     }
 
     return mergedUserConfig;
