@@ -37,9 +37,6 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
 
         const finalConfig = yield getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer });
 
-        // 这里会完成从开发者看到的目录结构，到脚手架编译所需的目录结构的转变
-        require('./process-configed-project/index').runProcessor({ watch: true, ...finalConfig  });
-
         const { cssLoaders, lessLoaders, sassLoaders } = require('./utils/util-get-style-loaders').getDev(finalConfig);
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
                 resolve: {
@@ -69,7 +66,6 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
                                         },
                                     },
                                 },
-                                segLoaderBody,
                             ],
                             include: [
                                 finalConfig.srcDir
