@@ -1,4 +1,4 @@
-const getReplaceLoader = (replace, currentEnv) => {
+const getReplaceLoader = (replace, taskName) => {
     const StringReplacePlugin = require('string-replace-webpack-plugin');
     const replacements = [];
 
@@ -6,7 +6,7 @@ const getReplaceLoader = (replace, currentEnv) => {
         replacements.push({
             pattern: new RegExp(key.replace(/\$/g, '\\$'), 'g'),
             replacement() {
-                return replace[key][currentEnv];
+                return replace[key][taskName];
             },
         });
     });

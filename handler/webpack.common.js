@@ -1,5 +1,5 @@
 module.exports = (finalConfig) => {
-    const { commonJs, srcFolder, buildFolder, currentEnv, replace, webpackConfig, hashStatic, afterBuild } = finalConfig;
+    const { commonJs, srcDir, distDir, taskName, replace, webpackConfig, hashStatic, afterBuild } = finalConfig;
 
     const webpack = require('webpack');
     const path = require('path');
@@ -15,7 +15,7 @@ module.exports = (finalConfig) => {
         }, {
         entry: require('./utils/util-get-entry-obj')(finalConfig),
         output: {
-            path: path.join(buildFolder, '/static/'),
+            path: path.join(distDir, '/static/'),
             filename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
             publicPath: '/static/',
             chunkFilename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
@@ -35,12 +35,12 @@ module.exports = (finalConfig) => {
                 enforce: 'post',
                 exclude: {
                     test: [
-                        path.join(srcFolder, 'node_modules'),
+                        path.join(srcDir, 'node_modules'),
                         path.join(__dirname, '../node_modules')
                     ],
                     exclude: [
-                        path.join(srcFolder, 'node_modules/@vdian/hotpot'),
-                        path.join(srcFolder, 'node_modules/@vdian/hotpot-h5'),
+                        path.join(srcDir, 'node_modules/@vdian/hotpot'),
+                        path.join(srcDir, 'node_modules/@vdian/hotpot-h5'),
                         path.join(__dirname, '../node_modules/@vdian/hotpot'),
                         /strip-ansi/
                     ]
@@ -49,29 +49,29 @@ module.exports = (finalConfig) => {
                 test: /\.[(js)(vue)(vuex)(tpl)(html)]*$/,
                 enforce: 'pre',
                 exclude: /(node_modules|bower_components)/,
-                loader: require('./utils/util-get-replace-loader')(replace, currentEnv),
+                loader: require('./utils/util-get-replace-loader')(replace, taskName),
             }],
         },
         resolve: {
             modules: [
-                path.resolve(srcFolder, 'node_modules/'),
+                path.resolve(srcDir, 'node_modules/'),
                 path.resolve(__dirname, '../node_modules/'),
             ],
             extensions: ['.js', '.json', '.vue']
         },
         resolveLoader: {
             modules: [
-                path.resolve(srcFolder, 'node_modules/'),
+                path.resolve(srcDir, 'node_modules/'),
                 path.resolve(__dirname, '../node_modules/'),
             ],
         },
         plugins: [
             new PluginClean({
-                buildFolder
+                distDir
             }),
             new WebpackOnBuildPlugin(() => {
                 if (afterBuild) {
-                    afterBuild(buildFolder);
+                    afterBuild(distDir);
                 }
             }),
             hashStatic ? new webpack.HashedModuleIdsPlugin() : new PluginNoop()

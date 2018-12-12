@@ -1,11 +1,11 @@
-const getEntryObj = ({ srcFolder, noPolyfill }) => {
+const getEntryObj = ({ srcDir, noPolyfill }) => {
     // entry.vendor 优先使用用户配置的 vendor，覆盖式
     const fs = require('fs');
     const path = require('path');
 
     const entryFiles = {};
 
-    let pageDir = require('./util-get-page-dir')(srcFolder);
+    let pageDir = require('./util-get-page-dir')(srcDir);
     const logUtil = require('./util-log');
 
     if (!pageDir) {

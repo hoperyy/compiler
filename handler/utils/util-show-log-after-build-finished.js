@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const logUtil = require('./util-log');
 
-const checkHtmlCountEquals = (srcFolder, buildFolder) => {
-    const entryPagesDir = require('./util-get-page-dir')(srcFolder);
+const checkHtmlCountEquals = (srcDir, distDir) => {
+    const entryPagesDir = require('./util-get-page-dir')(srcDir);
 
     let srcHtmlCount = 0;
     fs.readdirSync(entryPagesDir).forEach(dirname => {
@@ -13,7 +13,7 @@ const checkHtmlCountEquals = (srcFolder, buildFolder) => {
     });
 
     let buildHtmlCount = 0;
-    require('recursive-readdir-sync')(buildFolder).forEach(filepath => {
+    require('recursive-readdir-sync')(distDir).forEach(filepath => {
         if (/\.html$/.test(filepath)) {
             buildHtmlCount++;
         }
@@ -28,26 +28,26 @@ const checkHtmlCountEquals = (srcFolder, buildFolder) => {
 
 let remindLogDelayTimer;
 let intervalTimer;
-module.exports = ({ currentEnv, srcFolder, buildFolder, debugPort }) => {
+module.exports = ({ taskName, srcDir, distDir, port }) => {
     clearInterval(intervalTimer);
 
     intervalTimer = setInterval(() => {
-        if (fs.existsSync(buildFolder) && checkHtmlCountEquals(srcFolder, buildFolder)) {
+        if (fs.existsSync(distDir) && checkHtmlCountEquals(srcDir, distDir)) {
             clearInterval(intervalTimer);
             clearTimeout(remindLogDelayTimer);
 
             remindLogDelayTimer = setTimeout(() => {
                 // 遍历 build 目录
-                const pagesDir = path.join(buildFolder, 'pages');
+                const pagesDir = path.join(distDir, 'pages');
                 if (fs.existsSync(pagesDir) && fs.statSync(pagesDir)) {
                     const pages = fs.readdirSync(pagesDir);
 
                     if (pages.length === 0) {
                         logUtil.warn('没有检测到页面信息，若需添加页面到当前项目目录，可参考路径：./src/index/index.html');
                     } else if (pages.length === 1) {
-                        pages.map(pagePath => logUtil.log(`http://127.0.0.1:${debugPort}/pages/${pagePath}`));
+                        pages.map(pagePath => logUtil.log(`http://127.0.0.1:${port}/pages/${pagePath}`));
                     } else {
-                        pages.map((pagePath, index) => logUtil.log(`[${index}] http://127.0.0.1:${debugPort}/pages/${pagePath}`));
+                        pages.map((pagePath, index) => logUtil.log(`[${index}] http://127.0.0.1:${port}/pages/${pagePath}`));
                     }
                 }
                 clearTimeout(remindLogDelayTimer);

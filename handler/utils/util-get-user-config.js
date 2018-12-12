@@ -5,11 +5,11 @@ const isrelative = require('is-relative');
 const getDefaultReplace = require('./util-get-default-replace');
 const logUtil = require('./util-log');
 
-module.exports = function* ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort, webpack, WebpackDevServer, mode }) {
+module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode }) {
     // 开放到 qute.config.js 中的 API，设置了一些默认值
     let mergedUserConfig = {
-        buildFolder,
-        debugPort,
+        distDir,
+        port,
         replace: null,
         afterBuild: null,
         webpackConfig: {},
@@ -21,18 +21,25 @@ module.exports = function* ({ userFolder, srcFolder, buildFolder, currentEnv, de
         commonJs: true
     };
 
-    const userConfigFile = path.join(srcFolder, 'qute.config.js');
+    console.log(1);
+    const userConfigFile = path.join(srcDir, 'qute.config.js');
+
+    console.log(33, userConfigFile);
 
     if (!fs.existsSync(userConfigFile)) {
         return;
     }
 
+    console.log(2);
+
     let userConfig = require(userConfigFile);
+
+    console.log(4);
 
     // 支持开发者的配置文件有两种格式：function / json object
     if (typeof userConfig === 'function') {
         // 这些是传递给使用者的参数
-        userConfig = userConfig({ userFolder, srcFolder, buildFolder, currentEnv, webpack, WebpackDevServer });
+        userConfig = userConfig({ userDir, srcDir, distDir, taskName, webpack, WebpackDevServer });
     } else {
         throw new Error('qute.config.js 格式错误，必须是函数');
     }
@@ -44,14 +51,16 @@ module.exports = function* ({ userFolder, srcFolder, buildFolder, currentEnv, de
         }
     });
 
-    // 对 buildFolder 特殊处理
-    if (mergedUserConfig.buildFolder) {
-        if (typeof mergedUserConfig.buildFolder === 'string') {
-            if (isrelative(mergedUserConfig.buildFolder)) {
-                mergedUserConfig.buildFolder = path.join(userFolder, mergedUserConfig.buildFolder);
+    console.log(3);
+
+    // 对 distDir 特殊处理
+    if (mergedUserConfig.distDir) {
+        if (typeof mergedUserConfig.distDir === 'string') {
+            if (isrelative(mergedUserConfig.distDir)) {
+                mergedUserConfig.distDir = path.join(userDir, mergedUserConfig.distDir);
             }
         } else {
-            throw new Error('./qute.config.js 中的 buildFolder 应该是字符串，请填写正确的格式');
+            throw new Error('./qute.config.js 中的 distDir 应该是字符串，请填写正确的格式');
         }
     }
 
@@ -73,8 +82,9 @@ module.exports = function* ({ userFolder, srcFolder, buildFolder, currentEnv, de
     }
 
     // 单独对 config.js 中的配置进行处理
-    if (require('../process-configed-project/index').isConfigedProject({ userFolder })) {
-        const configValue = require('../process-configed-project/index').getFormattedConfigValue({ srcFolder });
+    console.log('444');
+    if (require('../process-configed-project/index').isConfigedProject({ userDir })) {
+        const configValue = require('../process-configed-project/index').getFormattedConfigValue({ srcDir });
         const oldReplace = configValue.vars;
 
         if (oldReplace) {

@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-module.exports = (srcFolder) => {
+module.exports = (srcDir) => {
     let pageDir;
 
     const pageDirList = require('./util-global-config').supportedPagesDirName;
 
     for (let i = 0, len = pageDirList.length; i < len; i++) {
-        const pageDirPath = path.join(srcFolder, pageDirList[i]);
+        const pageDirPath = path.join(srcDir, pageDirList[i]);
 
         if (fs.existsSync(pageDirPath) && fs.statSync(pageDirPath).isDirectory(pageDirPath)) {
             pageDir = pageDirPath;

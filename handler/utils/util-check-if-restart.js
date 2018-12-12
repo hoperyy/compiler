@@ -7,7 +7,7 @@ module.exports = ({ webpackServer, finalConfig }) => {
 
     let lastChangeTimeMap = {};
     configFiles.forEach((configFileName) => {
-        const configFilePath = path.join(finalConfig.srcFolder, configFileName);
+        const configFilePath = path.join(finalConfig.srcDir, configFileName);
 
         // 初始化 map 对象
         if (fs.existsSync(configFilePath)) {
@@ -17,7 +17,7 @@ module.exports = ({ webpackServer, finalConfig }) => {
 
     const check = () => {
         configFiles.forEach((configFileName) => {
-            const configFilePath = path.join(finalConfig.srcFolder, configFileName);
+            const configFilePath = path.join(finalConfig.srcDir, configFileName);
 
             if (!fs.existsSync(configFilePath)) {
                 return;
@@ -28,7 +28,7 @@ module.exports = ({ webpackServer, finalConfig }) => {
             if (curMtime !== lastChangeTimeMap[configFileName]) {
                 clearInterval(timer);
                 webpackServer.close();
-                require('kill-port')(finalConfig.debugPort).then(() => {
+                require('kill-port')(finalConfig.port).then(() => {
                     logUtil.log('项目配置有修改，重启项目编译');
                     process.send('restart');
                     process.exit(1000);

@@ -21,9 +21,9 @@ const rewriteHtml = (dir, options) => {
 };
 
 function buildHtml(finalConfig) {
-    const { srcFolder, buildFolder, replace, currentEnv, onHtmlBuild } = finalConfig;
+    const { srcDir, distDir, replace, taskName, onHtmlBuild } = finalConfig;
 
-    let pagesDir = utilGetPageDir(srcFolder);
+    let pagesDir = utilGetPageDir(srcDir);
 
     if (!pagesDir) {
         logUtil.error('\n\n项目中找不到页面入口 html 文件\n\n');
@@ -34,15 +34,15 @@ function buildHtml(finalConfig) {
 
     if (replace) {
         Object.keys(replace).forEach((key) => {
-            stream = stream.pipe(gulpReplace(new RegExp(key.replace(/\$/g, '\\$'), 'g'), replace[key][currentEnv]));
+            stream = stream.pipe(gulpReplace(new RegExp(key.replace(/\$/g, '\\$'), 'g'), replace[key][taskName]));
         });
     }
 
-    const buildPagesDir = path.join(buildFolder, 'pages');
+    const buildPagesDir = path.join(distDir, 'pages');
 
     let pipeline = null;
 
-    if (/build/.test(currentEnv)) {
+    if (/build/.test(taskName)) {
         pipeline = stream.pipe(rename((_path) => {
             _path.basename = _path.dirname;
             _path.dirname = '';
@@ -63,12 +63,12 @@ function buildHtml(finalConfig) {
     pipeline.on('end', () => {
         rewriteHtml(buildPagesDir, {
             ...finalConfig,
-            CDN_URL: replace['$$_CDNURL_$$'][currentEnv],
+            CDN_URL: replace['$$_CDNURL_$$'][taskName],
             callback: () => {
                 // 执行 onHtmlBuild 回调
                 if (onHtmlBuild) {
-                    if (fs.existsSync(path.join(buildFolder, 'pages'))) {
-                        const htmlFiles = fs.readdirSync(path.join(buildFolder, 'pages')).filter(filename => /\.html$/.test(filename)).map(filename => path.join(buildFolder, 'pages', filename));
+                    if (fs.existsSync(path.join(distDir, 'pages'))) {
+                        const htmlFiles = fs.readdirSync(path.join(distDir, 'pages')).filter(filename => /\.html$/.test(filename)).map(filename => path.join(distDir, 'pages', filename));
                         onHtmlBuild(htmlFiles);
                     }
                 }
@@ -79,11 +79,11 @@ function buildHtml(finalConfig) {
 }
 
 function presetHtml(finalConfig) {
-    const { srcFolder, watch } = finalConfig;
+    const { srcDir, watch } = finalConfig;
 
     buildHtml(finalConfig);
 
-    const pageDir = utilGetPageDir(srcFolder);
+    const pageDir = utilGetPageDir(srcDir);
 
     if (watch) {
         return htmlWatcher = gulp.watch([path.join(pageDir, '/**/*.html')], () => {
