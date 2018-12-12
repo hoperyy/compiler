@@ -2,10 +2,10 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 
-function Clean({ buildFolder }) {
-    if (fs.existsSync(buildFolder)) {
+function Clean({ distDir }) {
+    if (fs.existsSync(distDir)) {
         try {
-            fse.removeSync(buildFolder);
+            fse.removeSync(distDir);
         } catch(err) {
             throw Error(err);
         }

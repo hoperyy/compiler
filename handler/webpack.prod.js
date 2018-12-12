@@ -1,4 +1,4 @@
-module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv }) => {
+module.exports = ({ userDir, srcDir, distDir, taskName }) => {
     require('co')(function*() {
         const VUE_PATH = 'vue/dist/vue.common.js';
 
@@ -12,10 +12,10 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv }) => {
         const StringReplacePlugin = require('string-replace-webpack-plugin');
         const NoopPlugin = require('./plugins/plugin-noop');
 
-        const userConfig = yield require('./utils/util-get-user-config')({ userFolder, srcFolder, buildFolder, currentEnv, webpack, mode: 'production' });
+        const userConfig = yield require('./utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production' });
 
-        // 合并用户配置后的最终配置，包括：{ userFolder, srcFolder, buildFolder, currentEnv } 和 userConfig
-        const finalConfig = require('./utils/util-merge')({ userFolder, srcFolder, buildFolder, currentEnv }, userConfig);
+        // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName } 和 userConfig
+        const finalConfig = require('./utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
 
         const logUtil = require('./utils/util-log');
 
@@ -54,7 +54,7 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv }) => {
                                 },
                             ],
                             include: [
-                                srcFolder
+                                srcDir
                             ],
                         }]
                 },

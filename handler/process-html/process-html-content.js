@@ -11,11 +11,11 @@ const VCOLLECT_SCRIPT = `<script src="//assets.geilicdn.com/v-components/v-colle
 const JSBRIDGE_SCRIPT = `<script src="//s.geilicdn.com/script/common/jsbridge.min.js"></script>`;
 const FLEXIBLE_SCRIPT = `<script src="//assets.geilicdn.com/v-components/flexible/0.4.0/flexible.js"></script>`;
 
-function insertDeveloperInfo(content, userFolder) {
+function insertDeveloperInfo(content, userDir) {
     // 为页面添加注释，标注当前页面的发布信息
     const scriptId = Date.now();
 
-    const gitInfo = getGitInfo(userFolder);
+    const gitInfo = getGitInfo(userDir);
 
     const debugInfo = `
             <script id=${scriptId}>
@@ -258,7 +258,7 @@ function inlineJs(htmlContent, htmlFolder) {
     });
 }
 
-function processHtmlContent(htmlFolder, { CDN_URL, userFolder, commonJs, hashStatic, callback }) {
+function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic, callback }) {
     if (!fs.existsSync(htmlFolder)) {
         logUtil.warn(' html 文件不存在，跳过对 html 文件的处理');
         return;
@@ -370,7 +370,7 @@ function processHtmlContent(htmlFolder, { CDN_URL, userFolder, commonJs, hashSta
             content = removeComment(content);
 
             // 开发者信息的暴露
-            content = insertDeveloperInfo(content, userFolder);
+            content = insertDeveloperInfo(content, userDir);
 
             // 暂时不用
             // content = yield inlineCss(content, htmlFolder);

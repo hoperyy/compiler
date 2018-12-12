@@ -1,4 +1,4 @@
-module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort }) => {
+module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
     require('co')(function*() {
         const VUE_PATH = 'vue/dist/vue.js';
 
@@ -25,23 +25,22 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort })
         // 空插件
         const PluginNoop = require('./plugins/plugin-noop');
 
-        function* getFinalConfig({ userFolder, srcFolder, buildFolder, currentEnv, debugPort, webpack, WebpackDevServer }) {
+        function* getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer }) {
             // 合并用户配置
-            const userConfig = yield require('./utils/util-get-user-config')({ userFolder, srcFolder, buildFolder, currentEnv, debugPort, webpack, WebpackDevServer, mode: 'development' });
+            const userConfig = yield require('./utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode: 'development' });
 
-            // 合并用户配置后的最终配置，包括：{ userFolder, srcFolder, buildFolder, currentEnv, debugPort } 和 userConfig
-            const finalConfig = require('./utils/util-merge')({ userFolder, srcFolder, buildFolder, currentEnv, debugPort }, userConfig);
+            // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName, port } 和 userConfig
+            const finalConfig = require('./utils/util-merge')({ userDir, srcDir, distDir, taskName, port }, userConfig);
 
             return finalConfig;
         }
 
-        const finalConfig = yield getFinalConfig({ userFolder, srcFolder, buildFolder, currentEnv, debugPort, webpack, WebpackDevServer });
+        const finalConfig = yield getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer });
 
         // 这里会完成从开发者看到的目录结构，到脚手架编译所需的目录结构的转变
         require('./process-configed-project/index').runProcessor({ watch: true, ...finalConfig  });
 
         const { cssLoaders, lessLoaders, sassLoaders } = require('./utils/util-get-style-loaders').getDev(finalConfig);
-
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
                 resolve: {
                     alias: {
@@ -73,14 +72,14 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort })
                                 segLoaderBody,
                             ],
                             include: [
-                                finalConfig.srcFolder
+                                finalConfig.srcDir
                             ],
                         }]
                 },
                 plugins: [
                     new PluginCreateBlankCss({
                         entryObj: require('./utils/util-get-entry-obj')(finalConfig),
-                        targetDir: path.join(finalConfig.buildFolder, 'static')
+                        targetDir: path.join(finalConfig.distDir, 'static')
                     }),
                     new webpack.HotModuleReplacementPlugin(),
                     new WriteFilePlugin(),
@@ -106,7 +105,7 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort })
 
         Object.keys(finalWebpackConfig.entry).forEach((key) => {
             if (key !== 'vendor' && typeof finalWebpackConfig.entry[key].unshift === 'function') {
-                finalWebpackConfig.entry[key].unshift(`webpack-dev-server/client?http://localhost:${finalConfig.debugPort}`, 'webpack/hot/dev-server');
+                finalWebpackConfig.entry[key].unshift(`webpack-dev-server/client?http://localhost:${finalConfig.port}`, 'webpack/hot/dev-server');
             }
         });
 
@@ -115,7 +114,7 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort })
 
         // 启动 webpack
         const webpackServer = new WebpackDevServer(webpack(finalWebpackConfig), {
-            contentBase: finalConfig.buildFolder,
+            contentBase: finalConfig.distDir,
             // hot: true,
             historyApiFallback: true,
             quiet: false,
@@ -129,7 +128,7 @@ module.exports = ({ userFolder, srcFolder, buildFolder, currentEnv, debugPort })
             },
         });
 
-        webpackServer.listen(finalConfig.debugPort);
+        webpackServer.listen(finalConfig.port);
 
         require('./utils/util-check-if-restart')({ webpackServer, finalConfig });
     });
