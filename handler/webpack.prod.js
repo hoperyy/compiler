@@ -53,9 +53,9 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
                                     },
                                 },
                             ],
-                            include: [
-                                srcDir
-                            ],
+                            // include: [
+                            //     srcDir
+                            // ],
                         }]
                 },
                 plugins: [

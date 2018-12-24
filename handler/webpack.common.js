@@ -24,15 +24,15 @@ module.exports = (finalConfig) => {
             rules: [{
                 test: /\.(jpg|png|gif)$/,
                 use: 'url-loader?name=img/[hash].[ext]&limit=8000',
-                enforce: 'post'
+                // enforce: 'post'
             }, {
                 test: /\.(woff|svg|eot|ttf)\??.*$/,
                 use: 'url-loader?name=img/[hash].[ext]&limit=10',
-                enforce: 'post'
+                // enforce: 'post'
             }, {
                 test: /\.js$/,
                 loader: 'babel-loader',
-                enforce: 'post',
+                // enforce: 'post',
                 exclude: {
                     test: [
                         path.join(srcDir, 'node_modules'),
@@ -41,7 +41,7 @@ module.exports = (finalConfig) => {
                 }
             }, {
                 test: /\.[(js)(vue)(vuex)(tpl)(html)]$/,
-                enforce: 'pre',
+                // enforce: 'pre',
                 exclude: /(node_modules|bower_components)/,
                 loader: require('./utils/util-get-replace-loader')(replace, taskName),
             }],

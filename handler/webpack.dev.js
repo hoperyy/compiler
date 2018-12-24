@@ -55,7 +55,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
                             test: /\.(scss|sass)$/,
                             use: sassLoaders,
                         }, {
-                            test: /\.vue$/,
+                            test: /\.vue$/i,
                             use: [{
                                     loader: 'vue-loader',
                                     options: {
@@ -67,9 +67,9 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
                                     },
                                 },
                             ],
-                            include: [
-                                finalConfig.srcDir
-                            ],
+                            // include: [
+                            //     finalConfig.srcDir
+                            // ],
                         }]
                 },
                 plugins: [
@@ -107,8 +107,6 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
 
         // 启动 html 处理程序
         require('./process-html/index')({ ...finalConfig, watch: true, });
-
-        console.log(finalWebpackConfig.module.rules);
 
         // 启动 webpack
         const webpackServer = new WebpackDevServer(webpack(finalWebpackConfig), {
