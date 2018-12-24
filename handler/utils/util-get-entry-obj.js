@@ -1,4 +1,4 @@
-const getEntryObj = ({ srcDir, noPolyfill }) => {
+const getEntryObj = ({ srcDir, polyfill }) => {
     // entry.vendor 优先使用用户配置的 vendor，覆盖式
     const fs = require('fs');
     const path = require('path');
@@ -9,7 +9,7 @@ const getEntryObj = ({ srcDir, noPolyfill }) => {
     const logUtil = require('./util-log');
 
     if (!pageDir) {
-        logUtil.warn('找不到页面入口文件，入口文件举例: ./src/pages/index/index.js');
+        logUtil.warn('no entry file found: ./src/pages/**/index.js');
         process.exit(1);
         return;
     }
@@ -25,13 +25,13 @@ const getEntryObj = ({ srcDir, noPolyfill }) => {
             return;
         }
 
-        if (noPolyfill) {
+        if (polyfill) {
             entryFiles[`${dirname}/index`] = [
+                'babel-polyfill',
                 indexJsFile
             ];
         } else {
             entryFiles[`${dirname}/index`] = [
-                'babel-polyfill',
                 indexJsFile
             ];
         }

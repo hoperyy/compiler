@@ -46,7 +46,7 @@ module.exports = (finalConfig) => {
                     ]
                 }
             }, {
-                test: /\.[(js)(vue)(vuex)(tpl)(html)]*$/,
+                test: /\.[(js)(vue)(vuex)(tpl)(html)]$/,
                 enforce: 'pre',
                 exclude: /(node_modules|bower_components)/,
                 loader: require('./utils/util-get-replace-loader')(replace, taskName),
