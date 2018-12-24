@@ -106,7 +106,9 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
         });
 
         // 启动 html 处理程序
-        const htmlServer = require('./process-html/index')({ ...finalConfig, watch: true, });
+        require('./process-html/index')({ ...finalConfig, watch: true, });
+
+        console.log(finalWebpackConfig.module.rules);
 
         // 启动 webpack
         const webpackServer = new WebpackDevServer(webpack(finalWebpackConfig), {

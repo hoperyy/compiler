@@ -38,12 +38,6 @@ module.exports = (finalConfig) => {
                         path.join(srcDir, 'node_modules'),
                         path.join(__dirname, '../node_modules')
                     ],
-                    exclude: [
-                        path.join(srcDir, 'node_modules/@vdian/hotpot'),
-                        path.join(srcDir, 'node_modules/@vdian/hotpot-h5'),
-                        path.join(__dirname, '../node_modules/@vdian/hotpot'),
-                        /strip-ansi/
-                    ]
                 }
             }, {
                 test: /\.[(js)(vue)(vuex)(tpl)(html)]$/,
