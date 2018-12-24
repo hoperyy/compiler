@@ -109,16 +109,16 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
             const info = stats.toJson();
 
             if (stats.hasErrors()) {
-                let hasUglifyError = false;
+                let hasBuildError = false;
 
                 for (let i = 0, len = info.errors.length; i < len; i++) {
-                    if (/from\s*UglifyJs/i.test(info.errors[i])) {
-                        hasUglifyError = true;
+                    if (!/from\s*UglifyJs/i.test(info.errors[i])) {
+                        hasBuildError = true;
                         break;
                     }
                 }
 
-                if (!hasUglifyError) {
+                if (hasBuildError) {
                     logUtil.error('Compilication failed.');
                     console.error(info.errors);
                     process.exit(1);
