@@ -16,7 +16,7 @@ module.exports = (srcDir) => {
     }
 
     if (!pageDir) {
-        throw new Error('当前项目没有供编译的入口文件，请检查当前目录结构，规范的目录结构为 ./pages/index、./src/pages/index/、./src/index/');
+        throw new Error('no entry files found: ./pages/index、./src/pages/index/、./src/index/');
     }
 
     return pageDir;
