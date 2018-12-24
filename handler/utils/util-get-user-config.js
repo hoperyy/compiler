@@ -17,7 +17,7 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
         commonEntry: null,
         hashStatic: false,
         publishWithoutVersion: false,
-        noPolyfill: false,
+        polyfill: false,
         commonJs: true
     };
 

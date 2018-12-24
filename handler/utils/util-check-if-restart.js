@@ -29,7 +29,7 @@ module.exports = ({ webpackServer, finalConfig }) => {
                 clearInterval(timer);
                 webpackServer.close();
                 require('kill-port')(finalConfig.port).then(() => {
-                    logUtil.log('项目配置有修改，重启项目编译');
+                    logUtil.log('restart');
                     process.send('restart');
                     process.exit(1000);
                 }).catch();
