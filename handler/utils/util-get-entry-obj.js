@@ -17,7 +17,6 @@ const getEntryObj = ({ srcDir, polyfill }) => {
     fs.readdirSync(pageDir).forEach((fileName) => {
         const dirpath = path.join(pageDir, fileName);
         const indexJsFile = path.join(dirpath, 'index.js');
-        const indexHtmlFile = path.join(dirpath, 'index.html');
         const dirname = path.basename(dirpath);
 
         // 如果 js 文件不存在
