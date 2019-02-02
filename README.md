@@ -1,8 +1,8 @@
 ## This is a bio scaffold.
 
-[What is bio?](https://github.com/weidian-inc/bio-cli)
+[What is qute?](https://github.com/hoperyy/qute-cli)
 
-`bio-entry.js` is the file that bio runs scaffold.
+`qute-entry.js` is the file that bio runs scaffold.
 
 `project-template/` is demo dir.
 
@@ -23,7 +23,7 @@ Quick Start:
 
 +   step2: install bio
 
-    `npm install bio-cli -g`
+    `npm install qute-cli -g`
 
 +   step 3
 
@@ -33,7 +33,7 @@ Quick Start:
     
 +   step 4
 
-    `bio init bio-scaffold-vue`
+    `qute init qute-scaffold`
 
 +   step 5
 
