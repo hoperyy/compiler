@@ -295,7 +295,7 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
         // vcollect 必须作为 body 下的第一个 script，因此最后添加
         if (shouldInsertVcollect) {
             content = removeUselessDotScript(content);
-            content = shiftScriptInBody(content, VCOLLECT_SCRIPT)
+            // content = shiftScriptInBody(content, VCOLLECT_SCRIPT)
         }
 
         return content;
@@ -370,7 +370,7 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
             content = removeComment(content);
 
             // 开发者信息的暴露
-            content = insertDeveloperInfo(content, userDir);
+            // content = insertDeveloperInfo(content, userDir);
 
             // 暂时不用
             // content = yield inlineCss(content, htmlFolder);
