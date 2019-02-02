@@ -18,7 +18,7 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
         hashStatic: false,
         publishWithoutVersion: false,
         polyfill: false,
-        commonJs: true
+        commonJs: false
     };
 
     const userConfigFile = path.join(srcDir, 'qute.config.js');
