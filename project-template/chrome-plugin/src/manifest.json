@@ -1,0 +1,56 @@
+{
+    "name": "demo",
+    "version": "1.0.1",
+    "manifest_version": 2,
+    "description": "demo",
+    "icons": {
+        "16": "manifest-img/16.png",
+        "32": "manifest-img/32.png",
+        "48": "manifest-img/48.png",
+        "128": "manifest-img/128.png"
+    },
+
+    "browser_action": {
+        "default_icon": "manifest-img/128.png",
+        "default_title": "demo",
+        "default_popup": "pages/popup.html"
+    },
+
+    "background": {
+        // "persistent": true,
+        // "scripts": [
+        //     "jquery.js"
+        // ]
+    },
+
+    "permissions": [
+        "activeTab"
+    ],
+
+    "web_accessible_resources": [
+        "manifest-img/16.png",
+        "manifest-img/32.png",
+        "manifest-img/48.png",
+        "manifest-img/128.png",
+        "manifest-img/128.png",
+        "static/inserted/index.js",
+        "static/inserted/index.css"
+    ],
+
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*",
+                "file://*/*"
+            ],
+            "js": [
+                "static/pre-action/index.js",
+                "static/content/index.js"
+            ],
+            "run_at": "document_end",
+            "all_frames": false
+        }
+    ],
+    "content_security_policy": "style-src 'self' 'unsafe-inline';script-src 'self' 'unsafe-eval'; object-src 'self';"
+}
