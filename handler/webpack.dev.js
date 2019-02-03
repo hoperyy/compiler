@@ -38,6 +38,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
         const finalConfig = yield getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer });
 
         const { cssLoaders, lessLoaders, sassLoaders } = require('./utils/util-get-style-loaders').getDev(finalConfig);
+
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
                 resolve: {
                     alias: {
@@ -98,7 +99,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
             });
 
         logUtil.log(`webpack: Compiling...`);
-
+        
         Object.keys(finalWebpackConfig.entry).forEach((key) => {
             if (key !== 'vendor' && typeof finalWebpackConfig.entry[key].unshift === 'function') {
                 finalWebpackConfig.entry[key].unshift(`webpack-dev-server/client?http://localhost:${finalConfig.port}`, 'webpack/hot/dev-server');

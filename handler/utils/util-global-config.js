@@ -1,3 +1,3 @@
 module.exports = {
-    supportedPagesDirName: ['src', 'src/pages', 'pages']
+    supportedPagesDirName: ['src/pages', 'src', 'pages']
 };
