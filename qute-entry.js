@@ -28,7 +28,6 @@ require('qute-scaffold-helper')(process)(({ userDir, srcDir, distDir, taskName, 
     }
 
     if (/dev/.test(taskName)) {
-        console.log('+++');
         require('./handler/webpack.dev')({ userDir, srcDir, distDir, taskName, port });
     }
 
