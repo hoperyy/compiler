@@ -8,7 +8,7 @@
             "email": "liuyuanyangscript@gmail.com"
         }
     ],
-    "name": "qute-scaffold-vue",
+    "name": "qute-scaffold",
     "scripts": {
         "prepublishOnly": "git add . && git commit -m '[publish] new version published' && git push origin master"
     },
