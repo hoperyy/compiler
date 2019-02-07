@@ -1,8 +1,8 @@
-## This is a bio scaffold.
+## This is a qute scaffold.
 
 [What is qute?](https://github.com/hoperyy/qute-cli)
 
-`qute-entry.js` is the file that bio runs scaffold.
+`qute-entry.js` is the file that qute runs scaffold.
 
 `project-template/` is demo dir.
 
@@ -21,7 +21,7 @@ Quick Start:
 
     https://nodejs.org/en/download/
 
-+   step2: install bio
++   step2: install qute
 
     `npm install qute-cli -g`
 
@@ -44,7 +44,7 @@ Quick Start:
 +   step 6
     
     ```
-    bio run dev-daily
+    qute run dev-daily
     ```
 
 ## project tree
