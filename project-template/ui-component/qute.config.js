@@ -1,6 +1,7 @@
 /*
  * @bio.config.js
  */
+const path = require('path');
 
 module.exports = ({ userDir, srcDir, distDir, taskName, webpack, webpackDevServer }) => {
     return {
@@ -21,7 +22,11 @@ module.exports = ({ userDir, srcDir, distDir, taskName, webpack, webpackDevServe
 
         // webpack config to be merged; webpack config style required
         webpackConfig: {
-
+            plugins: [
+                new webpack.ProvidePlugin({
+                    hljs: path.join(srcDir, 'src/website/assets/js/highlight/highlight.pack.js')
+                }),
+            ]
         },
     };
 };
