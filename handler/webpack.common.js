@@ -44,6 +44,9 @@ module.exports = (finalConfig) => {
                 // enforce: 'pre',
                 exclude: /(node_modules|bower_components)/,
                 loader: require('./utils/util-get-replace-loader')(replace, taskName),
+            }, {
+                test: /\.md$/,
+                use: 'raw-loader'
             }],
         },
         resolve: {
