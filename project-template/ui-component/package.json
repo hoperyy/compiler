@@ -16,6 +16,8 @@
 	"qute-scaffold": "qute-scaffold",
 	"dependencies": {
 		"es6-promise": "^4.2.5",
-		"markdown-it": "^8.4.2"
+		"markdown-it": "^8.4.2",
+		"postcss-px2rem": "^0.3.0",
+		"postcss-px2rem-exclude": "0.0.6"
 	}
 }
