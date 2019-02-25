@@ -10,7 +10,7 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
     let mergedUserConfig = {
         distDir,
         port,
-        replace: yield getDefaultReplace(),
+        replace: {},
         afterBuild: null,
         webpackConfig: {},
         onHtmlBuild: null,
@@ -62,7 +62,7 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
     }
 
     // 针对 replace 字段单独处理
-    mergedUserConfig.replace = Object.assign(mergedUserConfig.replace, mergedUserConfig.replace);
+    Object.assign(mergedUserConfig.replace, yield getDefaultReplace(), userConfigFile.replace);
 
     // 单独获取是否有 commonJs
     if (mergedUserConfig.webpackConfig && mergedUserConfig.webpackConfig.entry && mergedUserConfig.webpackConfig.entry.vendor === null) {

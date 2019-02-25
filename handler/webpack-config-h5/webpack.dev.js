@@ -12,7 +12,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
         const merge = require('webpack-merge');
         const WebpackDevServer = require('webpack-dev-server');
 
-        const logUtil = require('./utils/util-log');
+        const logUtil = require('../utils/util-log');
 
         /* 引入的各类 webpack 插件 */
 
@@ -21,23 +21,23 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
         // 生成实体的构建结果文件的插件
         const WriteFilePlugin = require('write-file-webpack-plugin');
         // 创建空的 css 文件的插件
-        const PluginCreateBlankCss = require('./plugins/plugin-create-blank-css');
+        const PluginCreateBlankCss = require('../plugins/plugin-create-blank-css');
         // 空插件
-        const PluginNoop = require('./plugins/plugin-noop');
+        const PluginNoop = require('../plugins/plugin-noop');
 
         function* getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer }) {
             // 合并用户配置
-            const userConfig = yield require('./utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode: 'development' });
+            const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode: 'development' });
 
             // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName, port } 和 userConfig
-            const finalConfig = require('./utils/util-merge')({ userDir, srcDir, distDir, taskName, port }, userConfig);
+            const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName, port }, userConfig);
 
             return finalConfig;
         }
 
         const finalConfig = yield getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer });
 
-        const { cssLoaders, lessLoaders, sassLoaders } = require('./utils/util-get-style-loaders').getDev(finalConfig);
+        const { cssLoaders, lessLoaders, sassLoaders } = require('../utils/util-get-style-loaders').getDev(finalConfig);
 
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
                 resolve: {
@@ -75,13 +75,13 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
                 },
                 plugins: [
                     new PluginCreateBlankCss({
-                        entryObj: require('./utils/util-get-entry-obj')(finalConfig),
+                        entryObj: require('../utils/util-get-entry-obj')(finalConfig),
                         targetDir: path.join(finalConfig.distDir, 'static')
                     }),
                     new webpack.HotModuleReplacementPlugin(),
                     new WriteFilePlugin(),
                     new WebpackOnBuildPlugin(() => {
-                        require('./utils/util-show-log-after-build-finished')(finalConfig);
+                        require('../utils/util-show-log-after-build-finished')(finalConfig);
                     }),
                     // new BundleAnalyzerPlugin({
                     //     analyzerPort: yield (function getPort(defaultPort) {
@@ -107,7 +107,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
         });
 
         // 启动 html 处理程序
-        require('./process-html/index')({ ...finalConfig, watch: true, });
+        require('../process-html/index')({ ...finalConfig, watch: true, });
 
         // 启动 webpack
         const webpackServer = new WebpackDevServer(webpack(finalWebpackConfig), {
@@ -127,6 +127,6 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
 
         webpackServer.listen(finalConfig.port);
 
-        require('./utils/util-check-if-restart')({ webpackServer, finalConfig });
+        require('../utils/util-check-if-restart')({ webpackServer, finalConfig });
     });
 };

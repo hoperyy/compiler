@@ -10,18 +10,19 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
         const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
         const ExtractTextPlugin = require('extract-text-webpack-plugin');
         const StringReplacePlugin = require('string-replace-webpack-plugin');
-        const NoopPlugin = require('./plugins/plugin-noop');
+        const NoopPlugin = require('../plugins/plugin-noop');
 
         const userConfig = yield require('./utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production' });
 
         // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName } 和 userConfig
-        const finalConfig = require('./utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
+        const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
 
-        const logUtil = require('./utils/util-log');
+        const logUtil = require('../utils/util-log');
 
-        const { cssLoaders, lessLoaders, sassLoaders } = require('./utils/util-get-style-loaders').getProd({ ...finalConfig, ExtractTextPlugin });
+        const { cssLoaders, lessLoaders, sassLoaders } = require('../utils/util-get-style-loaders').getProd({ ...finalConfig, ExtractTextPlugin });
 
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
+                watch: false,
                 resolve: {
                     alias: {
                         'vue$': VUE_PATH,
@@ -90,7 +91,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
             });
 
         // 启动 html 处理程序
-        require('./process-html/index')({ ...finalConfig, watch: false, compress: true });
+        require('../process-html/index')({ ...finalConfig, watch: false, compress: true });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');
