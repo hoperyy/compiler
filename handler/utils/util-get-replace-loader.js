@@ -11,6 +11,8 @@ const getReplaceLoader = (replace, taskName) => {
         });
     });
 
+    console.log(replace);
+
     return StringReplacePlugin.replace({ replacements });
 };
 

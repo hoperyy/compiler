@@ -1,5 +1,5 @@
 module.exports = (finalConfig) => {
-    const { commonJs, srcDir, distDir, taskName, replace, webpackConfig, hashStatic, afterBuild } = finalConfig;
+    const { commonJs, srcDir, distDir, taskName, replace, webpackConfig, afterBuild } = finalConfig;
 
     const webpack = require('webpack');
     const path = require('path');
@@ -7,18 +7,18 @@ module.exports = (finalConfig) => {
     const fse = require('fs-extra');
     const merge = require('webpack-merge');
     const WebpackOnBuildPlugin = require('on-build-webpack');
-    const PluginNoop = require('./plugins/plugin-noop');
-    const PluginClean = require('./plugins/plugin-clean');
+    const PluginNoop = require('../plugins/plugin-noop');
+    const PluginClean = require('../plugins/plugin-clean');
 
     let commonWebpackConfig = merge({
             entry: commonJs ? { vendor: ['vue', 'core-js'] } : {},
         }, {
-        entry: require('./utils/util-get-entry-obj')(finalConfig),
+            entry: require('../utils/util-get-entry-obj')(finalConfig),
         output: {
             path: path.join(distDir, '/static/'),
-            filename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
+            filename: '[name].js',
             publicPath: '/static/',
-            chunkFilename: hashStatic ? '[name].[chunkhash].js' : '[name].js',
+            chunkFilename: '[name].js',
         },
         module: {
             rules: [{
@@ -36,7 +36,7 @@ module.exports = (finalConfig) => {
                 exclude: {
                     test: [
                         path.join(srcDir, 'node_modules'),
-                        path.join(__dirname, '../node_modules')
+                        path.join(__dirname, '../../node_modules')
                     ],
                 }
             }, {
@@ -52,14 +52,14 @@ module.exports = (finalConfig) => {
         resolve: {
             modules: [
                 path.resolve(srcDir, 'node_modules/'),
-                path.resolve(__dirname, '../node_modules/'),
+                path.resolve(__dirname, '../../node_modules/'),
             ],
             extensions: ['.js', '.json', '.vue']
         },
         resolveLoader: {
             modules: [
                 path.resolve(srcDir, 'node_modules/'),
-                path.resolve(__dirname, '../node_modules/'),
+                path.resolve(__dirname, '../../node_modules/'),
             ],
         },
         plugins: [
