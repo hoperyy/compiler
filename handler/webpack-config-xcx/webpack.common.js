@@ -13,7 +13,7 @@ module.exports = (finalConfig) => {
     let commonWebpackConfig = merge({
             entry: require('../utils/util-get-entry-obj')(finalConfig),
             output: {
-                path: distDir,
+                path: path.join(distDir, 'pages'),
                 filename: '[name].js',
                 publicPath: './',
                 chunkFilename: '[name].js',

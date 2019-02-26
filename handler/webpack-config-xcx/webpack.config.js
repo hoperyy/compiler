@@ -47,7 +47,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
                     },
                 }),
                 new ExtractTextPlugin({
-                    filename: '[name].css',
+                    filename: '[name].wxss',
                     disable: false,
                     allChunks: true // 将所有 css 全部抽离到 css 文件，包括异步组件中的 css
                 }),
@@ -55,7 +55,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         });
 
         // 启动 html 处理程序
-        require('../process-html/index')({ ...finalConfig, watch, compress: true });
+        require('./process-html/index')({ ...finalConfig, watch, compress: true });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');

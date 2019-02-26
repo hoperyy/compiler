@@ -5,7 +5,7 @@ const request = require('request');
 
 const getGitInfo = require('git-repo-info');
 
-const logUtil = require('../utils/util-log');
+const logUtil = require('../../utils/util-log');
 
 const VCOLLECT_SCRIPT = `<script src="//assets.geilicdn.com/v-components/v-collect/9.8.0/index.js"></script>`;
 const JSBRIDGE_SCRIPT = `<script src="//s.geilicdn.com/script/common/jsbridge.min.js"></script>`;
