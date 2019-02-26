@@ -11,8 +11,6 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
 
         const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production' });
 
-        console.log(userConfig);
-
         // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName } 和 userConfig
         const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
 
