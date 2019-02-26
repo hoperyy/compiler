@@ -11,69 +11,67 @@ module.exports = (finalConfig) => {
     const PluginClean = require('../plugins/plugin-clean');
 
     let commonWebpackConfig = merge({
-            entry: commonJs ? { vendor: ['vue', 'core-js'] } : {},
-        }, {
             entry: require('../utils/util-get-entry-obj')(finalConfig),
-        output: {
-            path: path.join(distDir, '/static/'),
-            filename: '[name].js',
-            publicPath: '/static/',
-            chunkFilename: '[name].js',
-        },
-        module: {
-            rules: [{
-                test: /\.(jpg|png|gif)$/,
-                use: 'url-loader?name=img/[hash].[ext]&limit=8000',
-                // enforce: 'post'
-            }, {
-                test: /\.(woff|svg|eot|ttf)\??.*$/,
-                use: 'url-loader?name=img/[hash].[ext]&limit=10',
-                // enforce: 'post'
-            }, {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                // enforce: 'post',
-                exclude: {
-                    test: [
-                        path.join(srcDir, 'node_modules'),
-                        path.join(__dirname, '../../node_modules')
-                    ],
-                }
-            }, {
-                test: /\.[(js)(vue)(vuex)(tpl)(html)]$/,
-                // enforce: 'pre',
-                exclude: /(node_modules|bower_components)/,
-                loader: require('./utils/util-get-replace-loader')(replace, taskName),
-            }, {
-                test: /\.md$/,
-                use: 'raw-loader'
-            }],
-        },
-        resolve: {
-            modules: [
-                path.resolve(srcDir, 'node_modules/'),
-                path.resolve(__dirname, '../../node_modules/'),
+            output: {
+                path: distDir,
+                filename: '[name].js',
+                publicPath: './',
+                chunkFilename: '[name].js',
+            },
+            module: {
+                rules: [{
+                    test: /\.(jpg|png|gif)$/,
+                    use: 'url-loader?name=img/[hash].[ext]&limit=8000',
+                    // enforce: 'post'
+                }, {
+                    test: /\.(woff|svg|eot|ttf)\??.*$/,
+                    use: 'url-loader?name=img/[hash].[ext]&limit=10',
+                    // enforce: 'post'
+                }, {
+                    test: /\.js$/,
+                    loader: 'babel-loader',
+                    // enforce: 'post',
+                    exclude: {
+                        test: [
+                            path.join(srcDir, 'node_modules'),
+                            path.join(__dirname, '../../node_modules')
+                        ],
+                    }
+                }, {
+                    test: /\.[(js)(vue)(vuex)(tpl)(html)]$/,
+                    // enforce: 'pre',
+                    exclude: /(node_modules|bower_components)/,
+                    loader: require('../utils/util-get-replace-loader')(replace, taskName),
+                }, {
+                    test: /\.md$/,
+                    use: 'raw-loader'
+                }],
+            },
+            resolve: {
+                modules: [
+                    path.resolve(srcDir, 'node_modules/'),
+                    path.resolve(__dirname, '../../node_modules/'),
+                ],
+                extensions: ['.js', '.json', '.vue']
+            },
+            resolveLoader: {
+                modules: [
+                    path.resolve(srcDir, 'node_modules/'),
+                    path.resolve(__dirname, '../../node_modules/'),
+                ],
+            },
+            plugins: [
+                new PluginClean({
+                    distDir
+                }),
+                new WebpackOnBuildPlugin(() => {
+                    if (afterBuild) {
+                        afterBuild(distDir);
+                    }
+                }),
+                hashStatic ? new webpack.HashedModuleIdsPlugin() : new PluginNoop()
             ],
-            extensions: ['.js', '.json', '.vue']
-        },
-        resolveLoader: {
-            modules: [
-                path.resolve(srcDir, 'node_modules/'),
-                path.resolve(__dirname, '../../node_modules/'),
-            ],
-        },
-        plugins: [
-            new PluginClean({
-                distDir
-            }),
-            new WebpackOnBuildPlugin(() => {
-                if (afterBuild) {
-                    afterBuild(distDir);
-                }
-            }),
-            hashStatic ? new webpack.HashedModuleIdsPlugin() : new PluginNoop()
-        ],
-    }, webpackConfig);
+        }, webpackConfig);
 
     // 默认是有 vendor 配置的，如果用户不希望生成 common.js，则删去默认的 vendor
     if (!finalConfig.commonJs) {
