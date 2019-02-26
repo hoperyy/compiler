@@ -7,10 +7,6 @@ const getGitInfo = require('git-repo-info');
 
 const logUtil = require('../../utils/util-log');
 
-const VCOLLECT_SCRIPT = `<script src="//assets.geilicdn.com/v-components/v-collect/9.8.0/index.js"></script>`;
-const JSBRIDGE_SCRIPT = `<script src="//s.geilicdn.com/script/common/jsbridge.min.js"></script>`;
-const FLEXIBLE_SCRIPT = `<script src="//assets.geilicdn.com/v-components/flexible/0.4.0/flexible.js"></script>`;
-
 function insertDeveloperInfo(content, userDir) {
     // 为页面添加注释，标注当前页面的发布信息
     const scriptId = Date.now();
@@ -43,7 +39,7 @@ function waitTillFolderExists(folder) {
                 done(null);
             }
         };
-        
+
         const timer = setInterval(check, 1000);
 
         check();
@@ -141,7 +137,7 @@ function pushCssLinkInHead(content, cssUrl) {
 }
 
 function _fetchResource(url) {
-    return function(done) {
+    return function (done) {
         request({ url, timeout: 20 * 1000 }, function (error, response, body) {
             if (error) {
                 done(null, '');
@@ -172,7 +168,7 @@ function _readLocalFile(filePath) {
 function* _inline(htmlContent, { rootReg, srcReg, replaceReg, inlineCallback, htmlFolder }) {
     const inlineReg = /\svinline\s/;
 
-    let maxCount =  20;
+    let maxCount = 20;
     let subContent = htmlContent;
     let newHtmlContent = '';
 
@@ -295,7 +291,6 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
         // vcollect 必须作为 body 下的第一个 script，因此最后添加
         if (shouldInsertVcollect) {
             content = removeUselessDotScript(content);
-            // content = shiftScriptInBody(content, VCOLLECT_SCRIPT)
         }
 
         return content;
@@ -353,16 +348,6 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
             let content = fs.readFileSync(filePath, 'utf8');
 
             content = autoInsertJsAndCss(pageName, content);
-
-            // if (!/common\/jsbridge/.test(content)) {
-            //     // 先禁用此功能
-            //     //content = shiftScriptInBody(content, JSBRIDGE_SCRIPT);
-            // }
-
-            // if (!/v-components\/flexible/.test(content)) {
-            //     //先禁用此功能
-            //     // content = shiftScriptInBody(content, FLEXIBLE_SCRIPT);
-            // }
 
             content = insertVcollect(content);
 

@@ -54,6 +54,9 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
             ],
         });
 
+        // 复制 wxconfig
+        require('./utils/util-move-wx-config')({ ...finalConfig });
+
         // 启动 html 处理程序
         require('./process-html/index')({ ...finalConfig, watch, compress: true });
 

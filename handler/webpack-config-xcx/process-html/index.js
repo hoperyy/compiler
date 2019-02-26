@@ -26,11 +26,11 @@ function buildHtml(finalConfig) {
     let pagesDir = utilGetPageDir(srcDir);
 
     if (!pagesDir) {
-        logUtil.error('\n\n项目中找不到页面入口 html 文件\n\n');
+        logUtil.error('\n\n项目中找不到页面入口 wxml 文件\n\n');
         return;
     }
 
-    let stream = gulp.src([`!${path.join(pagesDir, '/**/*.tpl.html')}`, path.join(pagesDir, '/**/*.html')]);
+    let stream = gulp.src([`!${path.join(pagesDir, '/**/*.tpl.html')}`, path.join(pagesDir, '/**/*.wxml')]);
 
     if (replace) {
         Object.keys(replace).forEach((key) => {
@@ -87,7 +87,7 @@ function presetHtml(finalConfig) {
     const pageDir = utilGetPageDir(srcDir);
 
     if (watch) {
-        return htmlWatcher = gulp.watch([path.join(pageDir, '/**/*.html')], () => {
+        return htmlWatcher = gulp.watch([path.join(pageDir, '/**/*.wxml')], () => {
             buildHtml(finalConfig);
         });
     }
