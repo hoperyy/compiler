@@ -5,9 +5,9 @@ const gulpReplace = require('gulp-replace');
 const rename = require('gulp-rename');
 const htmlmin = require("gulp-htmlmin");
 const processHtmlContent = require('./process-html-content');
-const checkUpdateInHtml = require('../check-update/in-html');
-const utilGetPageDir = require('../utils/util-get-page-dir');
-const logUtil = require('../utils/util-log');
+const checkUpdateInHtml = require('../../check-update/in-html');
+const utilGetPageDir = require('../../utils/util-get-page-dir');
+const logUtil = require('../../utils/util-log');
 
 let writeHtmlDelayTimer = null;
 
