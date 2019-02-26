@@ -10,7 +10,7 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
     let mergedUserConfig = {
         distDir,
         port,
-        replace: {},
+        replace: yield getDefaultReplace(),
         afterBuild: null,
         webpackConfig: {},
         onHtmlBuild: null,
@@ -23,53 +23,49 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
 
     const userConfigFile = path.join(srcDir, 'qute.config.js');
 
-    if (!fs.existsSync(userConfigFile)) {
-        return mergedUserConfig;
-    }
+    if (fs.existsSync(userConfigFile)) {
+        let userConfig = require(userConfigFile);
 
-    let userConfig = require(userConfigFile);
-
-    // 支持开发者的配置文件有两种格式：function / json object
-    if (typeof userConfig === 'function') {
-        // 这些是传递给使用者的参数
-        userConfig = userConfig({ userDir, srcDir, distDir, taskName, webpack, WebpackDevServer });
-    } else {
-        throw new Error('qute.config.js 格式错误，必须是函数');
-    }
-
-    // 统一做 merge 处理
-    Object.keys(mergedUserConfig).forEach(configName => {
-        if (userConfig[configName] !== undefined) {
-            mergedUserConfig[configName] = userConfig[configName];
-        }
-    });
-
-    // 对 distDir 特殊处理
-    if (mergedUserConfig.distDir) {
-        if (typeof mergedUserConfig.distDir === 'string') {
-            if (isrelative(mergedUserConfig.distDir)) {
-                mergedUserConfig.distDir = path.join(userDir, mergedUserConfig.distDir);
-            }
+        // 支持开发者的配置文件有两种格式：function / json object
+        if (typeof userConfig === 'function') {
+            // 这些是传递给使用者的参数
+            userConfig = userConfig({ userDir, srcDir, distDir, taskName, webpack, WebpackDevServer });
         } else {
-            throw new Error('./qute.config.js 中的 distDir 应该是字符串，请填写正确的格式');
+            throw new Error('qute.config.js 格式错误，必须是函数');
         }
-    }
 
-    // 对 hashStatic 特殊处理
-    if (mergedUserConfig.hashStatic && mode === 'development') {
-        mergedUserConfig.hashStatic = false;
-        logUtil.warn('本地开发环境下不支持资源 hash');
-    }
+        // 统一做 merge 处理
+        Object.keys(mergedUserConfig).forEach(configName => {
+            if (userConfig[configName] !== undefined) {
+                mergedUserConfig[configName] = userConfig[configName];
+            }
+        });
 
-    // 针对 replace 字段单独处理
-    Object.assign(mergedUserConfig.replace, yield getDefaultReplace(), userConfigFile.replace);
+        // 对 distDir 特殊处理
+        if (mergedUserConfig.distDir) {
+            if (typeof mergedUserConfig.distDir === 'string') {
+                if (isrelative(mergedUserConfig.distDir)) {
+                    mergedUserConfig.distDir = path.join(userDir, mergedUserConfig.distDir);
+                }
+            } else {
+                throw new Error('./qute.config.js 中的 distDir 应该是字符串，请填写正确的格式');
+            }
+        }
 
-    console.log('~~~', yield getDefaultReplace());
+        // 对 hashStatic 特殊处理
+        if (mergedUserConfig.hashStatic && mode === 'development') {
+            mergedUserConfig.hashStatic = false;
+            logUtil.warn('本地开发环境下不支持资源 hash');
+        }
 
-    // 单独获取是否有 commonJs
-    if (mergedUserConfig.webpackConfig && mergedUserConfig.webpackConfig.entry && mergedUserConfig.webpackConfig.entry.vendor === null) {
-        logUtil.warn('过段时间不再支持 webpackConfig 配置项中 "webpackConfig.entry.vendor === null" 设置，若不希望生成 common.js，请直接配置 commonJs: false');
-        mergedUserConfig.commonJs = false;
+        // 针对 replace 字段单独处理
+        Object.assign(mergedUserConfig.replace, yield getDefaultReplace(), userConfigFile.replace);
+
+        // 单独获取是否有 commonJs
+        if (mergedUserConfig.webpackConfig && mergedUserConfig.webpackConfig.entry && mergedUserConfig.webpackConfig.entry.vendor === null) {
+            logUtil.warn('过段时间不再支持 webpackConfig 配置项中 "webpackConfig.entry.vendor === null" 设置，若不希望生成 common.js，请直接配置 commonJs: false');
+            mergedUserConfig.commonJs = false;
+        }
     }
 
     return mergedUserConfig;

@@ -1,5 +1,5 @@
 module.exports = (finalConfig) => {
-    const { commonJs, srcDir, distDir, taskName, replace, webpackConfig, afterBuild } = finalConfig;
+    const { srcDir, distDir, taskName, replace, webpackConfig, afterBuild } = finalConfig;
 
     const webpack = require('webpack');
     const path = require('path');
@@ -69,7 +69,6 @@ module.exports = (finalConfig) => {
                         afterBuild(distDir);
                     }
                 }),
-                hashStatic ? new webpack.HashedModuleIdsPlugin() : new PluginNoop()
             ],
         }, webpackConfig);
 
