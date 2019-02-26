@@ -58,7 +58,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         require('./utils/util-move-wx-config')({ ...finalConfig });
 
         // 启动 html 处理程序
-        require('./process-html/index')({ ...finalConfig, watch, compress: true });
+        require('./process-html/index')({ ...finalConfig, watch, compress: false });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');

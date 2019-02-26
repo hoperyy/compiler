@@ -54,7 +54,6 @@ function buildHtml(finalConfig) {
             })).pipe(gulp.dest(buildPagesDir));
     } else {
         pipeline = stream.pipe(rename((_path) => {
-            // console.log(_path);
             _path.basename = 'index';
             _path.dirname = _path.dirname;
         })).pipe(gulp.dest(buildPagesDir));
