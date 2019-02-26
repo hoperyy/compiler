@@ -1,4 +1,4 @@
-module.exports = ({ userDir, srcDir, distDir, taskName }) => {
+module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
     require('co')(function* () {
         const webpack = require('webpack');
         const merge = require('webpack-merge');
@@ -11,6 +11,8 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
 
         const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production' });
 
+        console.log(userConfig);
+
         // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName } 和 userConfig
         const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
 
@@ -19,7 +21,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
         const { cssLoaders, lessLoaders, sassLoaders } = require('../utils/util-get-style-loaders').getProd({ ...finalConfig, ExtractTextPlugin });
 
         const finalWebpackConfig = merge.smart(require('./webpack.common')(finalConfig), {
-            watch: false,
+            watch,
             stats: {
                 errors: true
             },
@@ -55,7 +57,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
         });
 
         // 启动 html 处理程序
-        require('../process-html/index')({ ...finalConfig, watch: false, compress: true });
+        require('../process-html/index')({ ...finalConfig, watch, compress: true });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');

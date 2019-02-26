@@ -18,11 +18,11 @@ require('qute-scaffold-helper')(process)(({ userDir, srcDir, distDir, taskName, 
 
     if (/^xcx\-/.test(taskName)) {
         if (/dev/.test(taskName)) {
-            require('./handler/webpack-config-xcx/webpack.dev')({ userDir, srcDir, distDir, taskName });
+            require('./handler/webpack-config-xcx/webpack.config')({ userDir, srcDir, distDir, taskName, watch: true });
         }
 
         if (/build/.test(taskName)) {
-            require('./handler/webpack-config-xcx/webpack.prod')({ userDir, srcDir, distDir, taskName });
+            require('./handler/webpack-config-xcx/webpack.config')({ userDir, srcDir, distDir, taskName, watch: false });
         }
     }
 });

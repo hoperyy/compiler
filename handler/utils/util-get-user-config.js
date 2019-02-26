@@ -64,6 +64,8 @@ module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack,
     // 针对 replace 字段单独处理
     Object.assign(mergedUserConfig.replace, yield getDefaultReplace(), userConfigFile.replace);
 
+    console.log('~~~', yield getDefaultReplace());
+
     // 单独获取是否有 commonJs
     if (mergedUserConfig.webpackConfig && mergedUserConfig.webpackConfig.entry && mergedUserConfig.webpackConfig.entry.vendor === null) {
         logUtil.warn('过段时间不再支持 webpackConfig 配置项中 "webpackConfig.entry.vendor === null" 设置，若不希望生成 common.js，请直接配置 commonJs: false');
