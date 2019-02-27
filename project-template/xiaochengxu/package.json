@@ -1,0 +1,19 @@
+{
+  "name": "xht_miniprogram",
+  "version": "1.0.0",
+  "description": "小黑桃",
+  "main": "app.js",
+  "scripts": {
+    "dev": "q run xcx-dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.coding.net/stuzhaoxing/xht_miniprogram.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "qute-scaffold": "qute-scaffold",
+  "dependencies": {
+    "qute-cli": "^1.0.1"
+  }
+}
