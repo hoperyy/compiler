@@ -1,0 +1,74 @@
+/** index.wxss **/
+
+.body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* tabs */
+.tab-wrap {
+    display: flex;
+    background: #fff;
+}
+
+.tab-item {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+
+    .content {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 85rpx;
+        height: 80rpx;
+        font-size: 28rpx;
+        border-bottom: 4rpx solid #fff;
+    }
+
+    &.active .content {
+        border-bottom: 4rpx solid #C8054B;
+    }
+}
+
+.tab-content-item {
+  display: none;
+  padding: 40rpx 35rpx;
+
+  &.active {
+    display: block;
+  }
+}
+
+// 以下是各种列表形态
+
+// 左侧 banner 右侧两行
+.item-status-0 {
+  display: flex;
+  justify-content: space-between;
+
+  .banner {
+    box-sizing: border-box;
+    width: 330rpx;
+    height: 260rpx;
+    border-radius: 15px;
+    background: orange;
+  }
+
+  .list {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 334rpx;
+  }
+
+  .list-item {
+    box-sizing: border-box;
+    height: 120rpx;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.19);
+    border-radius: 15px;
+    background: orange;
+  }
+}
