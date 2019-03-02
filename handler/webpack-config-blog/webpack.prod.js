@@ -15,15 +15,15 @@ module.exports = ({ userDir, srcDir, distDir, taskName }) => {
         const userConfig = yield require('./utils/util-get-user-config')({
             userDir, srcDir, distDir, taskName, webpack, mode: 'production', defaultReplace: {
                 '$$_CDNURL_$$': {
-                    'h5-dev': `../static`,
-                    'h5-dev-daily': `../static`,
-                    'h5-dev-pre': `../static`,
-                    'h5-dev-prod': `../static`,
+                    'blog-dev': `../static`,
+                    'blog-dev-daily': `../static`,
+                    'blog-dev-pre': `../static`,
+                    'blog-dev-prod': `../static`,
 
-                    'h5-build': `../static`,
-                    'h5-build-daily': `../static`,
-                    'h5-build-pre': `../static`,
-                    'h5-build-prod': `../static`,
+                    'blog-build': `../static`,
+                    'blog-build-daily': `../static`,
+                    'blog-build-pre': `../static`,
+                    'blog-build-prod': `../static`,
                 }
             } });
 

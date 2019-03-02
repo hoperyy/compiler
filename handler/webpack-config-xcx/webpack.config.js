@@ -9,7 +9,20 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         const StringReplacePlugin = require('string-replace-webpack-plugin');
         const NoopPlugin = require('../plugins/plugin-noop');
 
-        const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production' });
+        const userConfig = yield require('../utils/util-get-user-config')({
+            userDir, srcDir, distDir, taskName, webpack, mode: 'production', defaultReplace: {
+                '$$_CDNURL_$$': {
+                    'xcx-dev': `../static`,
+                    'xcx-dev-daily': `../static`,
+                    'xcx-dev-pre': `../static`,
+                    'xcx-dev-prod': `../static`,
+
+                    'xcx-build': `../static`,
+                    'xcx-build-daily': `../static`,
+                    'xcx-build-pre': `../static`,
+                    'xcx-build-prod': `../static`,
+                }
+            } });
 
         // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName } 和 userConfig
         const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName }, userConfig);
@@ -58,7 +71,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         require('./utils/util-move-wx-config')({ ...finalConfig });
 
         // 启动 html 处理程序
-        require('./process-html/index')({ ...finalConfig, watch, compress: false });
+        require('./utils/process-html/index')({ ...finalConfig, watch, compress: false });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');

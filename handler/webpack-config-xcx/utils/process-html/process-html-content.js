@@ -5,7 +5,7 @@ const request = require('request');
 
 const getGitInfo = require('git-repo-info');
 
-const logUtil = require('../../utils/util-log');
+const logUtil = require('../../../utils/util-log');
 
 function insertDeveloperInfo(content, userDir) {
     // 为页面添加注释，标注当前页面的发布信息
@@ -39,7 +39,7 @@ function waitTillFolderExists(folder) {
                 done(null);
             }
         };
-        
+
         const timer = setInterval(check, 1000);
 
         check();
@@ -137,7 +137,7 @@ function pushCssLinkInHead(content, cssUrl) {
 }
 
 function _fetchResource(url) {
-    return function(done) {
+    return function (done) {
         request({ url, timeout: 20 * 1000 }, function (error, response, body) {
             if (error) {
                 done(null, '');
@@ -168,7 +168,7 @@ function _readLocalFile(filePath) {
 function* _inline(htmlContent, { rootReg, srcReg, replaceReg, inlineCallback, htmlFolder }) {
     const inlineReg = /\svinline\s/;
 
-    let maxCount =  20;
+    let maxCount = 20;
     let subContent = htmlContent;
     let newHtmlContent = '';
 

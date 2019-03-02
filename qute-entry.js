@@ -25,4 +25,14 @@ require('qute-scaffold-helper')(process)(({ userDir, srcDir, distDir, taskName, 
             require('./handler/webpack-config-xcx/webpack.config')({ userDir, srcDir, distDir, taskName, watch: false });
         }
     }
+
+    if (/^blog\-/.test(taskName)) {
+        if (/dev/.test(taskName)) {
+            require('./handler/webpack-config-blog/webpack.dev')({ userDir, srcDir, distDir, taskName, port });
+        }
+
+        if (/build/.test(taskName)) {
+            require('./handler/webpack-config-blog/webpack.prod')({ userDir, srcDir, distDir, taskName });
+        }
+    }
 });

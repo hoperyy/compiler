@@ -2,10 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const co = require('co');
 const request = require('request');
+const readdirSync = require('recursive-readdir-sync');
 
 const getGitInfo = require('git-repo-info');
 
-const logUtil = require('../../utils/util-log');
+const logUtil = require('../../../utils/util-log');
 
 function insertDeveloperInfo(content, userDir) {
     // 为页面添加注释，标注当前页面的发布信息
@@ -39,7 +40,7 @@ function waitTillFolderExists(folder) {
                 done(null);
             }
         };
-
+        
         const timer = setInterval(check, 1000);
 
         check();
@@ -137,7 +138,7 @@ function pushCssLinkInHead(content, cssUrl) {
 }
 
 function _fetchResource(url) {
-    return function (done) {
+    return function(done) {
         request({ url, timeout: 20 * 1000 }, function (error, response, body) {
             if (error) {
                 done(null, '');
@@ -168,7 +169,7 @@ function _readLocalFile(filePath) {
 function* _inline(htmlContent, { rootReg, srcReg, replaceReg, inlineCallback, htmlFolder }) {
     const inlineReg = /\svinline\s/;
 
-    let maxCount = 20;
+    let maxCount =  20;
     let subContent = htmlContent;
     let newHtmlContent = '';
 
@@ -254,34 +255,15 @@ function inlineJs(htmlContent, htmlFolder) {
     });
 }
 
-function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic, callback }) {
+function processHtmlContent(htmlFolder, { distDir, commonJs, hashStatic, callback }) {
     if (!fs.existsSync(htmlFolder)) {
         logUtil.warn(' html 文件不存在，跳过对 html 文件的处理');
         return;
     }
 
-    const autoInsertJsAndCss = (pageName, content) => {
-        // replace js
-        const commonJsString = content.indexOf(`<script src="${CDN_URL}/common.js"></script>`) !== -1;
-        const hasIndexJsString = content.indexOf(`<script src="${CDN_URL}/${pageName}/index.js"></script>`) !== -1;
-        const autoJsReg = /\<\!-\-\s*auto\-js\s*\-\-\>/;
-        const hasAutoJsComment = autoJsReg.test(content);
-        if (hasAutoJsComment && !commonJsString && !hasIndexJsString) {
-            if (commonJs) {
-                content = content.replace(autoJsReg, `<script src="${CDN_URL}/common.js"></script><script src="${CDN_URL}/${pageName}/index.js"></script>`);
-            } else {
-                content = content.replace(autoJsReg, `<script src="${CDN_URL}/${pageName}/index.js"></script>`);
-            }
-        }
-
-        // replace css
-        const autoCssReg = /\<\!-\-\s*auto\-css\s*\-\-\>/;
-        const hasIndexCssString = content.indexOf(`<link href="${CDN_URL}/${pageName}/index.css" rel="stylesheet" />`) !== -1;
-        const hasAutoCssComment = autoCssReg.test(content);
-        if (hasAutoCssComment && !hasIndexCssString) {
-            content = content.replace(autoCssReg, `<link href="${CDN_URL}/${pageName}/index.css" rel="stylesheet" />`);
-        }
-
+    const autoInsertJsAndCss = (relativeLinkPath, content) => {
+        content = pushScriptInBody(content, `<script src="${relativeLinkPath}/index.js"></script>`);
+        content = pushCssLinkInHead(content, `<link href="${relativeLinkPath}/index.css" rel="stylesheet" />`);
         return content;
     };
 
@@ -296,58 +278,23 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
         return content;
     };
 
-    const replaceWithHash = function* (content, pageName) {
-        const staticFolder = path.join(htmlFolder, '../static');
-
-        yield waitTillFolderExists(staticFolder);
-
-        const currentPageStaticFolder = path.join(staticFolder, pageName);
-
-        yield waitTillFolderExists(currentPageStaticFolder);
-
-        if (!fs.existsSync(path.join(staticFolder, pageName))) {
-            return '';
-        }
-
-        // hash 状态下 common.js 叫 vendor.js
-        const vendorJsArr = fs.readdirSync(staticFolder).filter(file => /vendor\.[\w]+\.js/.test(file));
-        const manifestJs = fs.readdirSync(staticFolder).filter(file => /manifest\.[\w]+\.js/.test(file))[0];
-        const currentPageStaticJsArr = fs.readdirSync(path.join(staticFolder, pageName)).filter(file => /[\w]+\.js/.test(file));
-        const currentPageStaticCssArr = fs.readdirSync(path.join(staticFolder, pageName)).filter(file => /[\w]+\.css/.test(file));
-
-        const replace = (hashedArr, getToBeReplaced, getReplaced) => {
-            hashedArr.forEach(hashedFileName => {
-                const unhashedFileName = hashedFileName.replace(/\.[\w]+\./, '.');
-                const strToBeReplaced = getToBeReplaced(unhashedFileName);
-
-                while (content.indexOf(strToBeReplaced) !== -1) {
-                    content = content.replace(strToBeReplaced, getReplaced(hashedFileName));
-                }
-            });
-        };
-
-        replace(vendorJsArr, unhashedFileName => `<script src="${CDN_URL}/common.js"`, hashedFileName => `<script>${fs.readFileSync(path.join(staticFolder, manifestJs), 'utf8')}</script><script src="${CDN_URL}/${hashedFileName}"`);
-        replace(currentPageStaticJsArr, unhashedFileName => `src="${CDN_URL}/${pageName}/${unhashedFileName}"`, hashedFileName => `src="${CDN_URL}/${pageName}/${hashedFileName}"`);
-
-        replace(currentPageStaticCssArr, unhashedFileName => `href="${CDN_URL}/${pageName}/${unhashedFileName}"`, hashedFileName => `href="${CDN_URL}/${pageName}/${hashedFileName}"`);
-
-        return content;
-    };
-
     const htmlFiles = [];
-    fs.readdirSync(htmlFolder).map((filename) => {
+    readdirSync(htmlFolder).map((filename) => {
         if (path.extname(filename) === '.html') {
             htmlFiles.push(filename);
         }
     });
     let pageCount = 0;
-    htmlFiles.forEach((filename) => {
+    htmlFiles.forEach((filePath) => {
         co(function* () {
-            const filePath = path.join(htmlFolder, filename);
-            const pageName = path.basename(filename, '.html');
+            const relativeObj = require('../get-relative-obj')(filePath, path.join(distDir, 'pages'));
+
+            const relativeLinkPath = `../${relativeObj.preDot}static/${relativeObj.relativeDirPath}`;
+
             let content = fs.readFileSync(filePath, 'utf8');
 
-            content = autoInsertJsAndCss(pageName, content);
+            content = pushScriptInBody(content, `<script src="${relativeLinkPath}/index.js"></script>`);
+            content = pushCssLinkInHead(content, `<link href="${relativeLinkPath}/index.css" rel="stylesheet" />`);
 
             content = insertVcollect(content);
 
@@ -362,14 +309,6 @@ function processHtmlContent(htmlFolder, { CDN_URL, userDir, commonJs, hashStatic
 
             // 暂时不用
             // content = yield inlineJs(content, htmlFolder);
-
-            if (hashStatic) {
-                const replaceResult = yield replaceWithHash(content, pageName);
-
-                if (replaceResult) {
-                    content = replaceResult;
-                }
-            }
 
             // 写入 html 文件
             fs.writeFileSync(filePath, content);

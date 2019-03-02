@@ -2,15 +2,15 @@ const fs = require('fs');
 const path = require('path');
 const isrelative = require('is-relative');
 
-const getDefaultReplace = require('./util-get-default-replace');
+// const getDefaultReplace = require('./util-get-default-replace');
 const logUtil = require('./util-log');
 
-module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode }) {
+module.exports = function* ({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode, defaultReplace }) {
     // 开放到 qute.config.js 中的 API，设置了一些默认值
     let mergedUserConfig = {
         distDir,
         port,
-        replace: yield getDefaultReplace(),
+        replace: defaultReplace, // yield getDefaultReplace(),
         afterBuild: null,
         webpackConfig: {},
         onHtmlBuild: null,
