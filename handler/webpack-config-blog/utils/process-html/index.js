@@ -5,9 +5,8 @@ const gulpReplace = require('gulp-replace');
 const rename = require('gulp-rename');
 const htmlmin = require("gulp-htmlmin");
 const processHtmlContent = require('./process-html-content');
-const checkUpdateInHtml = require('../../check-update/in-html');
-const utilGetPageDir = require('../../utils/util-get-page-dir');
-const logUtil = require('../../utils/util-log');
+const utilGetPageDir = require('../../../utils/util-get-page-dir');
+const logUtil = require('../../../utils/util-log');
 
 let writeHtmlDelayTimer = null;
 
@@ -16,7 +15,6 @@ const rewriteHtml = (dir, options) => {
 
     writeHtmlDelayTimer = setTimeout(() => {
         processHtmlContent(dir, options);
-        checkUpdateInHtml(dir);
     }, 500);
 };
 
@@ -30,7 +28,7 @@ function buildHtml(finalConfig) {
         return;
     }
 
-    let stream = gulp.src([path.join(pagesDir, '/**/*.html')]);
+    let stream = gulp.src([`!${path.join(pagesDir, '/**/*.tpl.html')}`, path.join(pagesDir, '/**/*.html')]);
 
     if (replace) {
         Object.keys(replace).forEach((key) => {
@@ -40,16 +38,14 @@ function buildHtml(finalConfig) {
 
     const buildPagesDir = path.join(distDir, 'pages');
 
-    let pipeline = null;
-
-    pipeline = stream.pipe(rename((_path) => {
-        _path.basename = 'index';
-        _path.dirname = _path.dirname;
-        _path.extname = '.wxml';
+    let pipeline = stream.pipe(rename((_path) => {
+        // console.log(_path);
+        // _path.basename = _path.dirname;
+        // _path.dirname = '';
     }));
 
     if (/build/.test(taskName)) {
-        pipeline = pipeline.pipe(htmlmin({
+        let pipeline = pipeline.pipe(htmlmin({
             minifyJS: true,
             minifyCSS: true,
             collapseWhitespace: true,
@@ -63,8 +59,7 @@ function buildHtml(finalConfig) {
     pipeline.on('end', () => {
         rewriteHtml(buildPagesDir, {
             ...finalConfig,
-            CDN_URL: replace['$$_CDNURL_$$'][taskName],
-            callback: () => {
+            callback() {
                 // 执行 onHtmlBuild 回调
                 if (onHtmlBuild) {
                     if (fs.existsSync(path.join(distDir, 'pages'))) {

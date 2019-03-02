@@ -2,6 +2,7 @@ const getEntryObj = ({ srcDir, polyfill }) => {
     // entry.vendor 优先使用用户配置的 vendor，覆盖式
     const fs = require('fs');
     const path = require('path');
+    const readdirSync = require('recursive-readdir-sync');
 
     const entryFiles = {};
 
@@ -14,15 +15,13 @@ const getEntryObj = ({ srcDir, polyfill }) => {
         return;
     }
 
-    fs.readdirSync(pageDir).forEach((fileName) => {
-        const dirpath = path.join(pageDir, fileName);
-        const indexJsFile = path.join(dirpath, 'index.js');
-        const dirname = path.basename(dirpath);
-
-        // 如果 js 文件不存在
-        if (!fs.existsSync(indexJsFile)) {
+    const indexJsReg = /\/index\.js$/;
+    readdirSync(pageDir).forEach((indexJsFile) => {
+        if (!indexJsReg.test(indexJsFile)) {
             return;
         }
+
+        const dirname = indexJsFile.replace(path.join(srcDir, 'pages/'), '').replace(indexJsReg, '');
 
         if (polyfill) {
             entryFiles[`${dirname}/index`] = [
@@ -35,6 +34,8 @@ const getEntryObj = ({ srcDir, polyfill }) => {
             ];
         }
     });
+
+    console.log(entryFiles);
 
     return entryFiles;
 };

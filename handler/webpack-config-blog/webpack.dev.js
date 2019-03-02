@@ -14,6 +14,8 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
 
         const logUtil = require('../utils/util-log');
 
+        require('./utils/generate-pages-dir')(srcDir);
+
         /* 引入的各类 webpack 插件 */
 
         // 解析包资源大小的插件
@@ -27,20 +29,19 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
 
         function* getFinalConfig({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer }) {
             // 合并用户配置
-            const userConfig = yield require('../utils/util-get-user-config')({
-                userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode: 'development', defaultReplace: {
-                    '$$_CDNURL_$$': {
-                        'h5-dev': `../static`,
-                        'h5-dev-daily': `../static`,
-                        'h5-dev-pre': `../static`,
-                        'h5-dev-prod': `../static`,
+            const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, port, webpack, WebpackDevServer, mode: 'development', defaultReplace: {
+                '$$_CDNURL_$$': {
+                    'blog-dev': `../static`,
+                    'blog-dev-daily': `../static`,
+                    'blog-dev-pre': `../static`,
+                    'blog-dev-prod': `../static`,
 
-                        'h5-build': `../static`,
-                        'h5-build-daily': `../static`,
-                        'h5-build-pre': `../static`,
-                        'h5-build-prod': `../static`
-                    }
-                } });
+                    'blog-build': `../static`,
+                    'blog-build-daily': `../static`,
+                    'blog-build-pre': `../static`,
+                    'blog-build-prod': `../static`,
+                }
+            } });
 
             // 合并用户配置后的最终配置，包括：{ userDir, srcDir, distDir, taskName, port } 和 userConfig
             const finalConfig = require('../utils/util-merge')({ userDir, srcDir, distDir, taskName, port }, userConfig);
@@ -92,7 +93,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, port }) => {
                         targetDir: path.join(finalConfig.distDir, 'static')
                     }),
                     new webpack.HotModuleReplacementPlugin(),
-                    new WriteFilePlugin(),
+                    // new WriteFilePlugin(),
                     new WebpackOnBuildPlugin(() => {
                         require('../utils/util-show-log-after-build-finished')(finalConfig);
                     }),
