@@ -36,7 +36,8 @@ module.exports = (finalConfig) => {
                 exclude: {
                     test: [
                         path.join(srcDir, 'node_modules'),
-                        path.join(__dirname, '../../node_modules')
+                        path.join(__dirname, '../../node_modules'),
+                        /highlightjs/
                     ],
                 }
             }, {
