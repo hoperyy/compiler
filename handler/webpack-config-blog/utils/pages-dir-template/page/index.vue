@@ -1,18 +1,16 @@
 <template>
     <div>
-        <p>{{message}}</p>
         <div v-html="mdContent"></div>
     </div>
 </template>
 
 
 <script>
-// import HAHA from '../../../前端/a.md';
-
 $$_IMPORT_$$
 
+import hljs from '$$_SRCDIR_$$/common/highlightjs';
+import '$$_SRCDIR_$$/common/highlightjs/styles/Railscasts.css';
 import MarkdownIt from 'markdown-it';
-import hljs from 'highlightjs';
 
 function highlightInit(hljs) {
   document.querySelectorAll('pre code').forEach(e => {
@@ -32,7 +30,6 @@ const md = new MarkdownIt({
 export default {
     data() {
         return {
-            message: 'Hello World',
             mdContent: ''
         };
     },
@@ -44,7 +41,6 @@ export default {
     },
     methods: {
       render() {
-        // this.mdContent = md.render(HAHA);
         $$_RENDER_$$
       }
     }

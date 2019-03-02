@@ -35,8 +35,6 @@ const getEntryObj = ({ srcDir, polyfill }) => {
         }
     });
 
-    console.log(entryFiles);
-
     return entryFiles;
 };
 
