@@ -47,7 +47,18 @@ module.exports = (finalConfig) => {
                 loader: require('../utils/util-get-replace-loader')(replace, taskName),
             }, {
                 test: /\.md$/,
-                use: 'raw-loader'
+                // use: 'raw-loader'
+                use: [
+                    {
+                        loader: "html-loader"
+                    },
+                    {
+                        loader: "markdown-loader",
+                        options: {
+                            /* your options here */
+                        }
+                    }
+                ]
             }],
         },
         resolve: {

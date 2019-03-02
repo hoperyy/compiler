@@ -48,7 +48,6 @@
         "kill-port": "^1.3.2",
         "less": "2.7.2",
         "less-loader": "4.0.5",
-        "markdown-it": "^8.4.2",
         "node-sass": "^4.10.0",
         "on-build-webpack": "0.1.0",
         "open": "0.0.5",
