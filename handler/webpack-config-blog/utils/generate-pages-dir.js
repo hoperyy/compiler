@@ -9,7 +9,7 @@ const getRelativeObj = require('./get-relative-obj');
 module.exports = function(srcDir) {
     const mdFiles = readdirSync(srcDir).filter((fileName) => {
         // 过滤
-        if (!/\.git/.test(fileName) && /\.md/.test(fileName)) {
+        if (!/(\.git)|(dist)|(node_modules)/.test(fileName) && /\.md/.test(fileName)) {
             return true;
         }
 
@@ -39,7 +39,7 @@ module.exports = function(srcDir) {
         let content = fs.readFileSync(targetVueFile, 'utf8');
 
         content = content.replace('$$_IMPORT_$$', `import MD from '../${relativeObj.preDot}${relativeObj.relativeDirPath}.md';`);
-        content = content.replace('$$_RENDER_$$', `this.mdContent = md.render(MD);`);
+        content = content.replace('$$_RENDER_$$', `this.mdContent = MD;`);
         content = content.replace(/\$\$\_SRCDIR\_\$\$/g, srcDir);
 
         fs.writeFileSync(targetVueFile, content);
