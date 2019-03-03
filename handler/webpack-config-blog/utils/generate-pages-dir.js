@@ -22,26 +22,29 @@ module.exports = function(srcDir) {
     const tptDir = path.join(__dirname, 'pages-dir-template');
     fse.copySync(path.join(tptDir, 'highlightjs'), path.join(srcDir, 'common/highlightjs'));
 
+    const generateDetail = (mdFilePath) => {
+        const dirName = mdFilePath.replace(srcDir, '').replace(/\.md$/, '');
+        const curPageDir = path.join(srcDir, 'pages', dirName);
+
+        fse.copySync(path.join(tptDir, 'detail'), curPageDir);
+
+        readdirSync(curPageDir).forEach(filePath => {
+            // 动态生成对 md 的引用字符串，写入 index.vue
+            let content = fs.readFileSync(filePath, 'utf8');
+
+            content = content.replace('$$_IMPORT_$$', `import MD from '${mdFilePath}';`);
+            content = content.replace('$$_RENDER_$$', `this.mdContent = MD;`);
+            content = content.replace(/\$\$\_SRCDIR\_\$\$/g, srcDir);
+
+            fs.writeFileSync(filePath, content);
+        });
+    };
+
     mdFiles.forEach(mdFilePath => {
         // 根据 md 文件名字生成目录名
-        const dirName = mdFilePath.replace(srcDir, '').replace(/\.md$/, '');
+        // const dirName = mdFilePath.replace(srcDir, '').replace(/\.md$/, '');
 
         // pages 目录相关
-        const pageRootDir = path.join(srcDir, 'pages');
-        const curPageDir = path.join(pageRootDir, dirName);
-
-        fse.copySync(path.join(tptDir, 'page'), curPageDir);
-
-        // 动态生成对 md 的引用字符串，写入 index.vue
-        const relativeObj = getRelativeObj(path.join(curPageDir, 'index.js'), pageRootDir);
-        const targetVueFile = path.join(curPageDir, 'index.vue');
-
-        let content = fs.readFileSync(targetVueFile, 'utf8');
-
-        content = content.replace('$$_IMPORT_$$', `import MD from '../${relativeObj.preDot}${relativeObj.relativeDirPath}.md';`);
-        content = content.replace('$$_RENDER_$$', `this.mdContent = MD;`);
-        content = content.replace(/\$\$\_SRCDIR\_\$\$/g, srcDir);
-
-        fs.writeFileSync(targetVueFile, content);
+        generateDetail(mdFilePath);
     });
 };
