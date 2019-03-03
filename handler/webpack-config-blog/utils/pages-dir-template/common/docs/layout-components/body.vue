@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    props: ['mdContent'],
+    props: ['mdContent']
 };
 </script>
 

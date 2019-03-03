@@ -14,70 +14,39 @@ module.exports = function(srcDir) {
     fse.ensureDirSync(pagesRootDir);
 
     // 根据 md 文件生成 html 索引
+    const mdFiles = readdirSync(docsRootDir).filter((fileName) => {
+        // 过滤
+        if (!/(\.git)|(dist)|(node_modules)/.test(fileName) && /\.md/.test(fileName)) {
+            return true;
+        }
+
+        return false;
+    });
 
     // 生成通用 highlightjs 文件
-    // const tptDir = path.join(__dirname, 'pages-dir-template');
-    // fse.copySync(path.join(tptDir, 'highlightjs'), path.join(srcDir, 'common/highlightjs'));
+    const tptDir = path.join(__dirname, 'pages-dir-template');
+    fse.copySync(path.join(tptDir, 'common'), path.join(srcDir, 'common'));
 
-    // const generatePagesFromDocsDir = (mdFilePath) => {
-    //     const dirName = mdFilePath.replace(docsRootDir, '').replace(/\.md$/, '');
-    //     const curPageDir = path.join(srcDir, 'pages', dirName);
+    const generatePagesFromDocsDir = (mdFilePath) => {
+        const relativeDirPath = mdFilePath.replace(docsRootDir, '').replace(/\.md$/, '').replace(/^\//, '').replace(/\/$/, '');
 
-    //     fse.copySync(path.join(tptDir, 'detail'), curPageDir);
+        const docsPagePath = path.join(srcDir, 'pages/docs');
 
-    //     readdirSync(curPageDir).forEach(filePath => {
-    //         // 动态生成对 md 的引用字符串，写入 index.vue
-    //         let content = fs.readFileSync(filePath, 'utf8');
+        const curPageDir = path.join(docsPagePath, relativeDirPath);
 
-    //         content = content.replace('$$_IMPORT_$$', `import MD from '${mdFilePath}';`);
-    //         content = content.replace('$$_RENDER_$$', `this.mdContent = MD;`);
-    //         content = content.replace(/\$\$\_SRCDIR\_\$\$/g, srcDir);
+        fse.copySync(path.join(tptDir, 'docs'), curPageDir);
 
-    //         fs.writeFileSync(filePath, content);
-    //     });
-    // };
+        const indexVueFilePath = path.join(docsPagePath, relativeDirPath, 'index.vue');
+        // 动态生成对 md 的引用字符串，写入 index.vue
+        let content = fs.readFileSync(indexVueFilePath, 'utf8');
 
-    const generateDocsPage = () => {
-        const mdFiles = readdirSync(docsRootDir).filter((fileName) => {
-            // 过滤
-            if (!/(\.git)|(dist)|(node_modules)/.test(fileName) && /\.md/.test(fileName)) {
-                return true;
-            }
+        content = content.replace(/\$\$\_IMPORT\_\$\$/g, `import MD from '${mdFilePath}';`);
+        content = content.replace(/\$\$\_SRCDIR\_\$\$/g, srcDir);
 
-            return false;
-        });
-
-        fse.copySync(path.join(__dirname, 'pages-dir-template/docs'), path.join(pagesRootDir, 'docs'));
-
-        // 根据 docs 生成各自的 component
-        const importsArr = [];
-        const routesArr = [];
-        mdFiles.forEach(mdFilePath => {
-            // 根据 md 文件名字生成目录名
-            const relativeDirPath = mdFilePath.replace(docsRootDir, '').replace(/\.md$/, '').replace(/^\//, '').replace(/\/$/, '');
-            const md5RelativeDirPath = md5(relativeDirPath);
-
-            // 路由相关
-            const componentName = `Component_${md5RelativeDirPath}`;
-            importsArr.push(`const ${componentName} = import('./docs-components/${relativeDirPath}.vue');`);
-            routesArr.push(`{ path: '/${relativeDirPath}',  component: ${ componentName } }`);
-
-            // 生成 component 文件
-            const docsPagePath = path.join(pagesRootDir, 'docs');
-            const componentVueFilePath = path.join(path.join(docsPagePath, 'docs-components', `${relativeDirPath}.vue`));
-            const componentVueFileContent = fs.readFileSync(path.join(docsPagePath, 'docs-components/template.vue'), 'utf8').replace('$$_IMPORT_$$', `import MD from '${mdFilePath}';`).replace(/\$\$\_DOCS\_PAGE\_PATH\_\$\$/g, docsPagePath);
-            fse.ensureFileSync(componentVueFilePath);
-            fs.writeFileSync(componentVueFilePath, componentVueFileContent);
-        });
-
-        // 重写 index.js 的子路由
-        const indexJsFilePath = path.join(pagesRootDir, 'docs/index.js');
-        let indexJsContent = fs.readFileSync(indexJsFilePath, 'utf8');
-        indexJsContent = indexJsContent.replace(/\$\$\_IMPORT\_\$\$/, importsArr.join('\n'));
-        indexJsContent = indexJsContent.replace(/\$\$\_ROUTES\_\$\$/, routesArr.join(',\n'));
-
-        fs.writeFileSync(indexJsFilePath, indexJsContent);
+        fs.writeFileSync(indexVueFilePath, content);
     };
 
-    generateDocsPage();
+    mdFiles.forEach(mdFilePath => {
+        generatePagesFromDocsDir(mdFilePath);
+    });
 };
