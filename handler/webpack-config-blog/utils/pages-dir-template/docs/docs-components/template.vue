@@ -1,7 +1,7 @@
 <template>
     <section>
         <b-header></b-header>
-        <b-body></b-body>
+        <b-body :mdContent="mdContent"></b-body>
         <b-footer></b-footer>
     </section>
 </template>
@@ -9,15 +9,12 @@
 <script>
 $$_IMPORT_$$
 
-import './reset.less';
-import './index.less';
+import Header from '$$_DOCS_PAGE_PATH_$$/components/header.vue';
+import Body from '$$_DOCS_PAGE_PATH_$$/components/body.vue';
+import Footer from '$$_DOCS_PAGE_PATH_$$/components/footer.vue';
 
-import Header from './components/header.vue';
-import Body from './components/body.vue';
-import Footer from './components/footer.vue';
-
-import hljs from '$$_SRCDIR_$$/common/highlightjs';
-import '$$_SRCDIR_$$/common/highlightjs/styles/Railscasts.css';
+import hljs from '$$_DOCS_PAGE_PATH_$$/highlightjs';
+import '$$_DOCS_PAGE_PATH_$$/highlightjs/styles/Railscasts.css';
 
 export default {
     components: {
@@ -31,16 +28,12 @@ export default {
         };
     },
     mounted() {
-        this.render();  
+        console.log('~~~', MD);
+        this.mdContent = MD;
         this.$nextTick(() => {
             document.querySelectorAll('pre code').forEach(e => { hljs.highlightBlock(e) });
         });
     },
-    methods: {
-      render() {
-          $$_RENDER_$$
-      }
-    }
 };
 </script>
 
