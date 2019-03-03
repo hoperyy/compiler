@@ -1,17 +1,15 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import './reset.less';
 import './index.less';
 
-import Index from './index.vue';
+$$_IMPORT_$$
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
-    routes: [{
-        path: '/',
-        component: Index,
-    }],
+    routes: [$$_ROUTES_$$],
 });
 
 new Vue({
