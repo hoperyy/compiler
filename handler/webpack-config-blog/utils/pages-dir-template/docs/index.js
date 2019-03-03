@@ -1,17 +1,22 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+// import VueRouter from 'vue-router';
 
-import './reset.less';
 import './index.less';
 
-$$_IMPORT_$$
+import Index from './index.vue';
 
-Vue.use(VueRouter);
+let App = Vue.extend(Index);
+new App().$mount('#app')
 
-const router = new VueRouter({
-    routes: [$$_ROUTES_$$],
-});
+// Vue.use(VueRouter);
 
-new Vue({
-    router,
-}).$mount('#app');
+// const router = new VueRouter({
+//     routes: [{
+//         path: '/',
+//         component: Index,
+//     }],
+// });
+
+// new Vue({
+//     router,
+// }).$mount('#app');
