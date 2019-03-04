@@ -1,7 +1,9 @@
 <template>
     <section>
         <b-header></b-header>
-        <b-body :mdContent="mdContent"></b-body>
+        <b-body>
+            <div class="body__area-detail" v-html="mdContent"></div>
+        </b-body>
         <b-footer></b-footer>
     </section>
 </template>
@@ -12,9 +14,9 @@ $$_IMPORT_$$
 import hljs from '$$_SRCDIR_$$/common/docs/highlightjs';
 import '$$_SRCDIR_$$/common/docs/highlightjs/styles/Railscasts.css';
 
-import Header from '$$_SRCDIR_$$/common/docs/layout-components/header.vue';
-import Body from '$$_SRCDIR_$$/common/docs/layout-components/body.vue';
-import Footer from '$$_SRCDIR_$$/common/docs/layout-components/footer.vue';
+import Header from '$$_SRCDIR_$$/common/layout/header.vue';
+import Body from '$$_SRCDIR_$$/common/layout/body.vue';
+import Footer from '$$_SRCDIR_$$/common/layout/footer.vue';
 
 export default {
     components: {
@@ -34,4 +36,14 @@ export default {
     }
 };
 </script>
+
+<style lang="less">
+.body__area-detail {
+    img {
+        width: 100%;
+        border-radius: 6px;
+    }
+}
+</style>
+
 
