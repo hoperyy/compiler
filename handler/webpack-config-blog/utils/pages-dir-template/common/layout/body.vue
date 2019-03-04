@@ -1,5 +1,5 @@
 <template>
-    <div class="body g-full-width">
+    <div class="g-body g-full-width">
         <div class="g-full-width__content">
             <div class="body__area-content">
                 <slot></slot>
@@ -62,9 +62,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.body {
+.g-body {
+    flex: 1;
+
     .g-full-width__content {
-        flex: 1;
         display: flex;
         justify-content: space-between; // margin: 0 auto;
         margin: 0 auto;
