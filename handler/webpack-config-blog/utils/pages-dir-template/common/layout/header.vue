@@ -1,6 +1,6 @@
 <template>
-    <header class="g-outter">
-        <div class="g-inner">
+    <header class="g-full-width">
+        <div class="g-full-width__content">
             <div class="left">hoperyy</div>
             <div class="right">
                 <a class="link" href="javascript:;">首页</a>
@@ -21,7 +21,7 @@ header {
     z-index: 1000;
     background: #000;
     
-    .g-inner {
+    .g-full-width__content {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -34,7 +34,6 @@ header {
     .link {
         display: flex;
         color: #fff;
-        text-decoration: none;
         justify-content: center;
         align-items: center;
         margin: 0 10px;
