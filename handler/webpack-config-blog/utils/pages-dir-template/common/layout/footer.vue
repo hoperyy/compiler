@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <footer>
         <div class="g-full-width footer--part0">
             <div class="g-full-width__content">
                 <div class="column--type0">
@@ -36,7 +36,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </footer>
     
 </template>
 

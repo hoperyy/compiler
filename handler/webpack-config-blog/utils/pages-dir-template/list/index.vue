@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section class="g-page">
         <b-header></b-header>
         <b-body>
             <div class="body__area-list"></div>
