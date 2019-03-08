@@ -9,8 +9,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         const StringReplacePlugin = require('string-replace-webpack-plugin');
         const NoopPlugin = require('../plugins/plugin-noop');
 
-        const userConfig = yield require('../utils/util-get-user-config')({
-            userDir, srcDir, distDir, taskName, webpack, mode: 'production', defaultReplace: {
+        const userConfig = yield require('../utils/util-get-user-config')({ userDir, srcDir, distDir, taskName, webpack, mode: 'production', defaultReplace: {
                 '$$_CDNURL_$$': {
                     'xcx-dev': `../static`,
                     'xcx-dev-daily': `../static`,
@@ -68,7 +67,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         });
 
         // 复制 wxconfig
-        require('./utils/util-move-wx-config')({ ...finalConfig });
+        require('./utils/generate-xcx-files')({ ...finalConfig });
 
         // 启动 html 处理程序
         require('./utils/process-html/index')({ ...finalConfig, watch, compress: false });

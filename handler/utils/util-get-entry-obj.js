@@ -1,8 +1,6 @@
-const getEntryObj = ({ srcDir, polyfill }) => {
+module.exports = ({ srcDir, polyfill }) => {
     // entry.vendor 优先使用用户配置的 vendor，覆盖式
-    const fs = require('fs');
-    const path = require('path');
-    const readdirSync = require('recursive-readdir-sync');
+    const getEntryInfo = require('./util-get-entry-info');
 
     const entryFiles = {};
 
@@ -15,27 +13,20 @@ const getEntryObj = ({ srcDir, polyfill }) => {
         return;
     }
 
-    const indexJsReg = /\/index\.js$/;
-    readdirSync(pageDir).forEach((indexJsFile) => {
-        if (!indexJsReg.test(indexJsFile)) {
-            return;
-        }
-
-        const dirname = indexJsFile.replace(path.join(srcDir, 'pages/'), '').replace(indexJsReg, '');
+    const entryInfo = getEntryInfo({ srcDir });
+    Object.keys(entryInfo).forEach(dirname => {
 
         if (polyfill) {
             entryFiles[`${dirname}/index`] = [
                 'babel-polyfill',
-                indexJsFile
+                entryInfo[dirname]
             ];
         } else {
             entryFiles[`${dirname}/index`] = [
-                indexJsFile
+                entryInfo[dirname]
             ];
         }
     });
 
     return entryFiles;
 };
-
-module.exports = getEntryObj;
