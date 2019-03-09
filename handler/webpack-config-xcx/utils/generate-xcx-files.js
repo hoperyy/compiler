@@ -24,8 +24,6 @@ module.exports = ({ srcDir, distDir }) => {
         const srcJson = path.join(srcDir, 'pages', dirname, 'index.json');
         const targetJson = path.join(distDir, 'pages', dirname, 'index.json');
 
-        console.log(srcJson, targetJson);
-
         if (fs.existsSync(srcJson)) {
             fse.copySync(srcJson, targetJson);
         }
