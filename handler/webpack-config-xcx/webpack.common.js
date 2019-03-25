@@ -1,5 +1,5 @@
 module.exports = (finalConfig) => {
-    const { srcDir, distDir, taskName, replace, webpackConfig, afterBuild } = finalConfig;
+    const { srcDir, userDir, distDir, taskName, replace, webpackConfig, afterBuild } = finalConfig;
 
     const webpack = require('webpack');
     const path = require('path');
@@ -11,9 +11,9 @@ module.exports = (finalConfig) => {
     const PluginClean = require('../plugins/plugin-clean');
 
     let commonWebpackConfig = merge({
-            entry: require('../utils/util-get-entry-obj')(finalConfig),
+            entry: require('../utils/util-get-entry-obj')({ ...finalConfig, fileReg: /\/src\.js$/ }),
             output: {
-                path: path.join(distDir, 'pages'),
+                path: path.join(userDir, 'dist-pages'),
                 filename: '[name].js',
                 publicPath: './',
                 chunkFilename: '[name].js',

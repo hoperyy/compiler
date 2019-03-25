@@ -1,4 +1,4 @@
-module.exports = ({ srcDir }) => {
+module.exports = ({ srcDir, fileReg = /\/index\.js$/ }) => {
     const path = require('path');
     const readdirSync = require('recursive-readdir-sync');
 
@@ -11,14 +11,13 @@ module.exports = ({ srcDir }) => {
         return;
     }
 
-    const indexJsReg = /\/index\.js$/;
     const map = {};
     readdirSync(pageDir).forEach((indexJsFile) => {
-        if (!indexJsReg.test(indexJsFile)) {
+        if (!fileReg.test(indexJsFile)) {
             return;
         }
 
-        const dirname = indexJsFile.replace(path.join(srcDir, 'pages/'), '').replace(indexJsReg, '');
+        const dirname = indexJsFile.replace(path.join(srcDir, 'pages/'), '').replace(fileReg, '');
 
         map[dirname] = indexJsFile;
     });

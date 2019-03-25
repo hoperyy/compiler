@@ -19,7 +19,9 @@ const rewriteHtml = (dir, options) => {
 };
 
 function buildHtml(finalConfig) {
-    const { srcDir, distDir, replace, taskName, onHtmlBuild } = finalConfig;
+    const { srcDir, userDir, distDir, replace, taskName, onHtmlBuild } = finalConfig;
+
+    const distPagesPath = path.join(userDir, 'dist-pages');
 
     let pagesDir = utilGetPageDir(srcDir);
 
@@ -35,8 +37,6 @@ function buildHtml(finalConfig) {
             stream = stream.pipe(gulpReplace(new RegExp(key.replace(/\$/g, '\\$'), 'g'), replace[key][taskName]));
         });
     }
-
-    const buildPagesDir = path.join(distDir, 'pages');
 
     let pipeline = null;
 
@@ -55,18 +55,18 @@ function buildHtml(finalConfig) {
         }));
     }
 
-    pipeline = pipeline.pipe(gulp.dest(buildPagesDir));
+    pipeline = pipeline.pipe(gulp.dest(distPagesPath));
     
     // build 目录的 html 文件生成后，添加一些通用脚本，比如埋点、jsbridge、flexible 等
     pipeline.on('end', () => {
-        rewriteHtml(buildPagesDir, {
+        rewriteHtml(distPagesPath, {
             ...finalConfig,
             CDN_URL: replace['$$_CDNURL_$$'][taskName],
             callback: () => {
                 // 执行 onHtmlBuild 回调
                 if (onHtmlBuild) {
-                    if (fs.existsSync(path.join(distDir, 'pages'))) {
-                        const htmlFiles = fs.readdirSync(path.join(distDir, 'pages')).filter(filename => /\.html$/.test(filename)).map(filename => path.join(distDir, 'pages', filename));
+                    if (fs.existsSync(distPagesPath)) {
+                        const htmlFiles = fs.readdirSync(distPagesPath).filter(filename => /\.html$/.test(filename)).map(filename => path.join(distPagesPath, filename));
                         onHtmlBuild(htmlFiles);
                     }
                 }

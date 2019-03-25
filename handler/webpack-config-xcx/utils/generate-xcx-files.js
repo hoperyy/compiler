@@ -4,28 +4,18 @@ const path = require('path');
 
 const getEntryInfo = require('../../utils/util-get-entry-info');
 
-module.exports = ({ srcDir, distDir }) => {
-    fse.ensureDirSync(distDir);
-
-    const configSrcDir = path.join(srcDir, 'wxconfig');
-
-    if (!fs.existsSync(configSrcDir) || !fs.statSync(configSrcDir).isDirectory()) {
-        return;
-    }
-
-    fs.readdirSync(configSrcDir).forEach(filename => {
-        fse.copySync(path.join(configSrcDir, filename), path.join(distDir, filename));
-    });
-
+module.exports = ({ srcDir, userDir }) => {
     // 复制 index.json
-    const entryInfo = getEntryInfo({ srcDir });
+    const entryInfo = getEntryInfo({ srcDir, fileReg: /\/src\.js$/ });
+
+    const distPagesPath = path.join(userDir, 'dist-pages');
 
     Object.keys(entryInfo).forEach(dirname => {
-        const srcJson = path.join(srcDir, 'pages', dirname, 'index.json');
-        const targetJson = path.join(distDir, 'pages', dirname, 'index.json');
+        const src = path.join(srcDir, 'pages', dirname);
+        const target = path.join(distPagesPath, dirname);
 
-        if (fs.existsSync(srcJson)) {
-            fse.copySync(srcJson, targetJson);
+        if (fs.existsSync(src)) {
+            fse.copySync(src, target);
         }
     });
 };

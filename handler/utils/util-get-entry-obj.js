@@ -1,4 +1,4 @@
-module.exports = ({ srcDir, polyfill }) => {
+module.exports = ({ srcDir, polyfill, fileReg }) => {
     // entry.vendor 优先使用用户配置的 vendor，覆盖式
     const getEntryInfo = require('./util-get-entry-info');
 
@@ -13,7 +13,7 @@ module.exports = ({ srcDir, polyfill }) => {
         return;
     }
 
-    const entryInfo = getEntryInfo({ srcDir });
+    const entryInfo = getEntryInfo({ srcDir, fileReg });
     Object.keys(entryInfo).forEach(dirname => {
 
         if (polyfill) {
