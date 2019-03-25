@@ -12,6 +12,7 @@ module.exports = ({ srcDir, polyfill, fileReg }) => {
         process.exit(1);
         return;
     }
+    
 
     const entryInfo = getEntryInfo({ srcDir, fileReg });
     Object.keys(entryInfo).forEach(dirname => {
