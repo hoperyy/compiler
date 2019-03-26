@@ -70,7 +70,7 @@ module.exports = ({ userDir, srcDir, distDir, taskName, watch }) => {
         require('./utils/generate-xcx-files')({ ...finalConfig });
 
         // 启动 html 处理程序
-        // require('./utils/process-html/index')({ ...finalConfig, watch, compress: false });
+        require('./utils/process-html/index')({ ...finalConfig, watch, compress: false });
 
         // 启动 webpack
         logUtil.log('webpack: Compiling...');

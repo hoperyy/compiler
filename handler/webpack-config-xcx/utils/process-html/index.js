@@ -30,7 +30,7 @@ function buildHtml(finalConfig) {
         return;
     }
 
-    let stream = gulp.src([path.join(pagesDir, '/**/*.html')]);
+    let stream = gulp.src([path.join(pagesDir, '/**/*.wxml')]);
 
     if (replace) {
         Object.keys(replace).forEach((key) => {
@@ -66,7 +66,7 @@ function buildHtml(finalConfig) {
                 // 执行 onHtmlBuild 回调
                 if (onHtmlBuild) {
                     if (fs.existsSync(distPagesPath)) {
-                        const htmlFiles = fs.readdirSync(distPagesPath).filter(filename => /\.html$/.test(filename)).map(filename => path.join(distPagesPath, filename));
+                        const htmlFiles = fs.readdirSync(distPagesPath).filter(filename => /\.wxml$/.test(filename)).map(filename => path.join(distPagesPath, filename));
                         onHtmlBuild(htmlFiles);
                     }
                 }
@@ -84,7 +84,7 @@ function presetHtml(finalConfig) {
     const pageDir = utilGetPageDir(srcDir);
 
     if (watch) {
-        return htmlWatcher = gulp.watch([path.join(pageDir, '/**/*.html')], () => {
+        return htmlWatcher = gulp.watch([path.join(pageDir, '/**/*.wxml')], () => {
             buildHtml(finalConfig);
         });
     }
